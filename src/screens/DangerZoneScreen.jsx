@@ -146,6 +146,7 @@ export default function DangerZoneScreen({ navigate }) {
   return (
     <>
       <style>{CSS}</style>
+      <div className="screen" style={{ overflowY: "auto", background: "#0d0511" }}>
       <div className="dz-screen screen-enter">
 
         {/* Header */}
@@ -195,6 +196,7 @@ export default function DangerZoneScreen({ navigate }) {
           </div>
         </div>
 
+      </div>
       </div>
 
       {/* ── Unpair confirmation modal ── */}

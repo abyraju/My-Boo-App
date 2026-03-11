@@ -445,8 +445,8 @@ function AppShell({ screen, navigate, sharedProps }) {
 
   return (
     <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", overflow:"hidden", background:"var(--deep)" }}>
-      {/* Screen body */}
-      <div className="scroll" onClick={dimClick} style={{ background: "#0d0511", position: "relative", flex: 1, overflow: "hidden" }}>
+      {/* Screen body — flex:1 keeps nav at bottom; screens fill this via position:absolute */}
+      <div style={{ position: "relative", flex: 1, overflow: "hidden", background: "#0d0511" }} onClick={dimClick}>
         {tab === SCREENS.HOME         && <HomeScreen onDrawer={() => { setDrawer(true); setFab(false); }} />}
         {tab === SCREENS.MAIN_PROFILE && <MainProfileScreen navigate={shellNavigate} />}
         {tab === SCREENS.DANGER_ZONE  && <DangerZoneScreen navigate={shellNavigate} />}

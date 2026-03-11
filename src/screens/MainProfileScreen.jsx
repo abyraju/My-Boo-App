@@ -141,8 +141,8 @@ const CSS = `
   }
   .pr-info-label { flex: 1; }
   .pr-info-lbl-top { font-size: 10px; color: rgba(255,255,255,.28); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
-  .pr-info-lbl-val { font-size: 13px; color: rgba(255,255,255,.75); }
-  .pr-info-lbl-val.mono { font-family: 'Cormorant Garamond', serif; letter-spacing: 3px; font-size: 14px; }
+  .pr-info-lbl-val { font-size: 13px; color: rgba(255,255,255,.9); }
+  .pr-info-lbl-val.mono { font-family: 'Cormorant Garamond', serif; letter-spacing: 3px; font-size: 14px; color: rgba(255,255,255,.9); }
   .pr-info-toggle {
     width: 42px; height: 24px; border-radius: 12px;
     background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.1);
@@ -336,6 +336,7 @@ export default function MainProfileScreen({ navigate }) {
   return (
     <>
       <style>{CSS}</style>
+      <div className="screen" style={{ overflowY: "auto", background: "#0d0511" }}>
       <div className="profile-bg screen-enter">
 
         {/* Header */}
@@ -450,6 +451,7 @@ export default function MainProfileScreen({ navigate }) {
           <div className="pr-danger-lock">🔒</div>
         </div>
 
+      </div>
       </div>
 
       {/* PIN gate before entering Danger Zone */}
