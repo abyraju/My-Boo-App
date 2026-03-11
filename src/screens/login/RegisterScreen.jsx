@@ -1,7 +1,7 @@
 // screens/RegisterScreen.jsx
 import { useState } from "react";
-import SCREENS from "../constants/screens";
-import { COUNTRIES } from "../constants/data";
+import SCREENS from "../../constants/screens";
+import { COUNTRIES } from "../../constants/data";
 
 export default function RegisterScreen({ navigate }) {
   const [selectedCountry, setSelectedCountry] = useState(null);

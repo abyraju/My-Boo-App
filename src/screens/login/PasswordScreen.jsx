@@ -1,6 +1,6 @@
 // screens/PasswordScreen.jsx
 import { useState } from "react";
-import SCREENS from "../constants/screens";
+import SCREENS from "../../constants/screens";
 
 const EyeIcon = ({ size = 18, open = true }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

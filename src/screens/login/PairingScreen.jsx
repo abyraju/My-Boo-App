@@ -1,8 +1,8 @@
 // screens/PairingScreen.jsx
 import { useState } from "react";
-import { ShieldIcon } from "../icons/index.jsx";
-import SCREENS from "../constants/screens";
-import { BOO_ID } from "../constants/data";
+import { ShieldIcon } from "../../icons/index.jsx";
+import SCREENS from "../../constants/screens";
+import { BOO_ID } from "../../constants/data";
 
 export default function PairingScreen({ navigate }) {
   const [copied, setCopied] = useState(false);
@@ -19,7 +19,9 @@ export default function PairingScreen({ navigate }) {
       <div className="aw" style={{ justifyContent: "flex-start", paddingTop: 50 }}>
 
         {/* Step indicator */}
+        {/* Step indicator — step 4 of 4 */}
         <div className="steps" style={{ marginBottom: 10, alignSelf: "flex-start" }}>
+          <div className="sd sd-done" />
           <div className="sd sd-done" />
           <div className="sd sd-done" />
           <div className="sd sd-on" />

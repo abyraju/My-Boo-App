@@ -1,7 +1,7 @@
 // screens/PairSuccessScreen.jsx
-import { HeartIcon, ShieldIcon } from "../icons/index.jsx";
-import SCREENS from "../constants/screens";
-import { BOO_ID } from "../constants/data";
+import { HeartIcon, ShieldIcon } from "../../icons/index.jsx";
+import SCREENS from "../../constants/screens";
+import { BOO_ID } from "../../constants/data";
 
 export default function PairSuccessScreen({ navigate, yourAvatar }) {
   return (

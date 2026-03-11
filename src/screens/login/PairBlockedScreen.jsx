@@ -1,6 +1,6 @@
 // screens/PairBlockedScreen.jsx
-import { AlertIcon, ShieldIcon } from "../icons/index.jsx";
-import SCREENS from "../constants/screens";
+import { AlertIcon, ShieldIcon } from "../../icons/index.jsx";
+import SCREENS from "../../constants/screens";
 
 export default function PairBlockedScreen({ navigate }) {
   return (

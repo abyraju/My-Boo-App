@@ -1,7 +1,7 @@
 // screens/UnpairScreen.jsx
 import { useState } from "react";
-import { UnlinkIcon, AlertIcon, ShieldIcon } from "../icons/index.jsx";
-import SCREENS from "../constants/screens";
+import { UnlinkIcon, AlertIcon, ShieldIcon } from "../../icons/index.jsx";
+import SCREENS from "../../constants/screens";
 
 export default function UnpairScreen({ navigate }) {
   const [step, setStep] = useState(0); // 0 = prompt, 1 = confirm

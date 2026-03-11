@@ -1,6 +1,6 @@
 // screens/SignInScreen.jsx
-import { HeartIcon, GoogleIcon, ShieldIcon } from "../icons/index.jsx";
-import SCREENS from "../constants/screens";
+import { HeartIcon, GoogleIcon, ShieldIcon } from "../../icons/index.jsx";
+import SCREENS from "../../constants/screens";
 
 export default function SignInScreen({ navigate }) {
   return (

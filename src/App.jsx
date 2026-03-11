@@ -1,19 +1,20 @@
 // App.jsx
 import { useState, useRef } from "react";
 import SCREENS from "./constants/screens";
-import SignInScreen          from "./screens/SignInScreen";
-import RegisterScreen        from "./screens/RegisterScreen";
-import PasswordScreen        from "./screens/PasswordScreen";
-import AvatarUploadScreen    from "./screens/AvatarUploadScreen";
-import PairingScreen         from "./screens/PairingScreen";
-import PairSuccessScreen     from "./screens/PairSuccessScreen";
-import PairBlockedScreen     from "./screens/PairBlockedScreen";
-import UnpairScreen          from "./screens/UnpairScreen";
-import ProfileSettingsScreen from "./screens/ProfileSettingsScreen";
-import HomeScreen            from "./screens/HomeScreen";
-import MainProfileScreen     from "./screens/MainProfileScreen";
-import PinSetupScreen        from "./screens/PinSetupScreen";
-import DangerZoneScreen      from "./screens/DangerZoneScreen";
+import SignInScreen          from "./screens/login/SignInScreen";
+import RegisterScreen        from "./screens/login/RegisterScreen";
+import PasswordScreen        from "./screens/login/PasswordScreen";
+import PairingScreen         from "./screens/login/PairingScreen";
+import PairSuccessScreen     from "./screens/login/PairSuccessScreen";
+import PairBlockedScreen     from "./screens/login/PairBlockedScreen";
+import PinSetupScreen        from "./screens/login/PinSetupScreen";
+import HomeScreen            from "./screens/home/HomeScreen";
+import ChatScreen            from "./screens/features/ChatScreen";
+import AvatarUploadScreen    from "./screens/settings/AvatarUploadScreen";
+import UnpairScreen          from "./screens/settings/UnpairScreen";
+import ProfileSettingsScreen from "./screens/settings/ProfileSettingsScreen";
+import MainProfileScreen     from "./screens/settings/MainProfileScreen";
+import DangerZoneScreen      from "./screens/settings/DangerZoneScreen";
 
 // ── Global CSS ────────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -285,7 +286,7 @@ const RADIAL_ITEMS = [
   { cls:"r-btn-gallery", e:"📸", l:"Gallery", a:-32,  d:80 },
 ];
 
-function RadialItems({ open, onClose }) {
+function RadialItems({ open, onClose, onChat }) {
   return (
     <div className="radial-wrap">
       {RADIAL_ITEMS.map(({ cls, e, l, a, d }, i) => {
@@ -302,7 +303,7 @@ function RadialItems({ open, onClose }) {
                 : "translate(-50%,-50%) scale(.5)",
               transitionDelay: open ? `${i * .045}s` : `${(2 - i) * .03}s`,
             }}
-            onPointerUp={ev => { ev.stopPropagation(); onClose(); }}
+            onPointerUp={ev => { ev.stopPropagation(); if (l === "Message") onChat(); else onClose(); }}
           >
             <div className={`r-btn ${cls}`}>{e}</div>
             <span className="r-lbl">{l}</span>
@@ -344,7 +345,7 @@ const LDR_CHIPS = [
   { e:"🌐", l:"Date Ideas" },
 ];
 
-function QuickDrawer({ open, onClose }) {
+function QuickDrawer({ open, onClose, onChat }) {
   return (
     <div className={`drawer-overlay${open ? " open" : ""}`}>
       <div className="drawer-backdrop" onClick={onClose} />
@@ -353,7 +354,7 @@ function QuickDrawer({ open, onClose }) {
         <div className="drawer-heading">Quick <em>Access</em></div>
         <div className="d-grid">
           {DRAWER_TILES.map(({ cls, e, l }) => (
-            <div key={l} className={`d-tile ${cls}`} onClick={onClose}>
+            <div key={l} className={`d-tile ${cls}`} onClick={l === "Chat" ? onChat : onClose}>
               <div className="d-ico">{e}</div>
               <span className="d-lbl">{l}</span>
             </div>
@@ -373,29 +374,38 @@ function QuickDrawer({ open, onClose }) {
   );
 }
 
+// FAB — swipe-up to open, swipe-down to close, tap to toggle
 function FabButton({ open, onToggle }) {
   const dragRef = useRef({ dragging: false, startY: 0 });
-  const onPointerDown = (e) => { dragRef.current = { dragging: false, startY: e.clientY }; e.currentTarget.setPointerCapture(e.pointerId); };
+
+  const onPointerDown = (e) => {
+    dragRef.current = { dragging: false, startY: e.clientY };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
   const onPointerMove = (e) => {
     const dy = dragRef.current.startY - e.clientY;
-    if (dy > 10 && !open) { dragRef.current.dragging = true; onToggle(true); }
-    if (dy < -10 && open) { dragRef.current.dragging = true; onToggle(false); }
+    if (dy > 12 && !open)  { dragRef.current.dragging = true; onToggle(true);  }
+    if (dy < -12 && open)  { dragRef.current.dragging = true; onToggle(false); }
   };
   const onPointerUp = (e) => {
     e.stopPropagation();
     if (!dragRef.current.dragging) onToggle(!open);
     dragRef.current.dragging = false;
   };
+
   return (
     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+      {/* Swipe-up hint dots */}
       <div style={{ display:"flex", gap:3, opacity: open ? 0 : 0.3, transition:"opacity .2s", pointerEvents:"none", marginBottom:2 }}>
         {[3,5,3].map((h,i) => (
-          <div key={i} style={{ width:3, height:h, borderRadius:2, background:"rgba(255,255,255,.7)", opacity:1-i*.15 }} />
+          <div key={i} style={{ width:3, height:h, borderRadius:2, background:"rgba(255,255,255,.7)", opacity:1-i*.15 }}/>
         ))}
       </div>
       <div
         className={`nav-fab${open ? " fab-open" : ""}`}
-        onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
         style={{ touchAction:"none" }}
       >
         <span className="fab-glyph">✦</span>
@@ -414,7 +424,9 @@ function AppShell({ navigate }) {
   const dimClick  = ()  => { if (fabOpen) setFab(false); };
 
   const shellNavigate = (s) => {
-    if (s === SCREENS.DANGER_ZONE || s === SCREENS.MAIN_PROFILE || s === SCREENS.HOME) {
+    if (s === SCREENS.DANGER_ZONE || s === SCREENS.MAIN_PROFILE || s === SCREENS.HOME || s === SCREENS.CHAT) {
+      setFab(false);
+      setDrawer(false);
       handleTab(s);
     } else {
       navigate(s);
@@ -428,16 +440,17 @@ function AppShell({ navigate }) {
         {tab === SCREENS.HOME         && <HomeScreen onDrawer={() => { setDrawer(true); setFab(false); }} />}
         {tab === SCREENS.MAIN_PROFILE && <MainProfileScreen navigate={shellNavigate} />}
         {tab === SCREENS.DANGER_ZONE  && <DangerZoneScreen  navigate={shellNavigate} />}
+        {tab === SCREENS.CHAT         && <ChatScreen onBack={() => handleTab(SCREENS.HOME)} />}
       </div>
 
-      <QuickDrawer open={drawer} onClose={() => setDrawer(false)} />
+      {tab !== SCREENS.CHAT && <QuickDrawer open={drawer} onClose={() => setDrawer(false)} onChat={() => { setDrawer(false); shellNavigate(SCREENS.CHAT); }} />}
 
-      {fabOpen && (
+      {fabOpen && tab !== SCREENS.CHAT && (
         <div onClick={() => setFab(false)} style={{ position:"absolute", inset:0, zIndex:19, background:"rgba(0,0,0,.48)", backdropFilter:"blur(2px)" }} />
       )}
 
-      {/* Bottom nav */}
-      <nav className="shell-nav">
+      {/* Bottom nav — hidden on full-screen screens like Chat */}
+      <nav className="shell-nav" style={{ display: tab === SCREENS.CHAT ? "none" : undefined }}>
         <div className={`nav-tab${tab === SCREENS.HOME ? " active" : ""}`} onClick={() => handleTab(SCREENS.HOME)}>
           <div className="nav-tab-ico"><HomeIco on={tab === SCREENS.HOME} /></div>
           <span className="nav-tab-lbl">Home</span>
@@ -445,7 +458,7 @@ function AppShell({ navigate }) {
         </div>
 
         <div className="nav-fab-col">
-          <RadialItems open={fabOpen} onClose={() => setFab(false)} />
+          <RadialItems open={fabOpen} onClose={() => setFab(false)} onChat={() => { setFab(false); shellNavigate(SCREENS.CHAT); }} />
           <FabButton open={fabOpen} onToggle={handleFab} />
         </div>
 
@@ -468,7 +481,7 @@ export default function App() {
   const navigate    = (s) => setScreen(s);
   const sharedProps = { navigate, yourAvatar, setYourAvatar };
 
-  const isShell = screen === SCREENS.HOME || screen === SCREENS.MAIN_PROFILE || screen === SCREENS.DANGER_ZONE;
+  const isShell = screen === SCREENS.HOME || screen === SCREENS.MAIN_PROFILE || screen === SCREENS.DANGER_ZONE || screen === SCREENS.CHAT;
 
   return (
     <>

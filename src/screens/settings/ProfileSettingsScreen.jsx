@@ -1,8 +1,8 @@
 // screens/ProfileSettingsScreen.jsx
 import { useRef } from "react";
-import { CamIcon, CheckIcon, BackIcon } from "../icons/index.jsx";
-import SCREENS from "../constants/screens";
-import { COUNTRIES, BOO_ID } from "../constants/data";
+import { CamIcon, CheckIcon, BackIcon } from "../../icons/index.jsx";
+import SCREENS from "../../constants/screens";
+import { COUNTRIES, BOO_ID } from "../../constants/data";
 
 export default function ProfileSettingsScreen({ navigate, yourAvatar, setYourAvatar }) {
   const fileInputRef = useRef();

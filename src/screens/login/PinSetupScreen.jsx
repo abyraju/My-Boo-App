@@ -1,7 +1,7 @@
 // screens/PinSetupScreen.jsx
 // Two-step PIN setup: Enter → Confirm → done
 import { useState } from "react";
-import SCREENS from "../constants/screens";
+import SCREENS from "../../constants/screens";
 
 const CSS = `
   .pin-screen {

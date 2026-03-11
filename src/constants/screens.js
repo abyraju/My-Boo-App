@@ -14,6 +14,8 @@ const SCREENS = {
   HOME:          "home",
   MAIN_PROFILE:  "main_profile",
   DANGER_ZONE:   "danger_zone",
+  // ── Features ──
+  CHAT:          "chat",
 };
 
 export default SCREENS;

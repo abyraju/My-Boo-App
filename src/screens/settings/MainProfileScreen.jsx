@@ -1,6 +1,6 @@
 // screens/MainProfileScreen.jsx
 import { useState, useEffect } from "react";
-import SCREENS from "../constants/screens";
+import SCREENS from "../../constants/screens";
 
 // ── Clock ─────────────────────────────────────────────────────────────────────
 const COUPLE_START = new Date("2025-07-07T00:00:00");

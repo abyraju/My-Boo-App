@@ -1,7 +1,7 @@
 // screens/DangerZoneScreen.jsx
 // Accessible only after PIN verification. Contains Unpair and Delete Everything.
 import { useState } from "react";
-import SCREENS from "../constants/screens";
+import SCREENS from "../../constants/screens";
 
 const CSS = `
   .dz-screen {

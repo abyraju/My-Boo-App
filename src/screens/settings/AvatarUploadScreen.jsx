@@ -1,7 +1,7 @@
 // screens/AvatarUploadScreen.jsx
 import { useRef } from "react";
-import { CamIcon, CheckIcon, ShieldIcon } from "../icons/index.jsx";
-import SCREENS from "../constants/screens";
+import { CamIcon, CheckIcon, ShieldIcon } from "../../icons/index.jsx";
+import SCREENS from "../../constants/screens";
 
 export default function AvatarUploadScreen({ navigate, previewAvatar, setPreviewAvatar, setYourAvatar }) {
   const fileInputRef = useRef();
