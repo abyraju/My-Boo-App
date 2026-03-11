@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Boo — Design Document</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --rose:    #e8748a;
+  --rose-lt: #f5a8b8;
+  --rose-dk: #c45578;
+  --plum:    #6b3a6e;
+  --velvet:  #130818;
+  --deep:    #0d0511;
+  --gold:    #c9a96e;
+  --mint:    #5ef5a0;
+  --white:   #ffffff;
+  --dim:     rgba(255,255,255,.42);
+  --faint:   rgba(255,255,255,.22);
+  --border:  rgba(255,255,255,.07);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+
+body {
+  background: var(--deep);
+  color: var(--dim);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ─── NOISE OVERLAY ─────────────────────────────────────── */
+body::before {
+  content:'';
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px;
+  opacity: .5;
+}
+
+/* ─── NAV ───────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 64px;
+  background: rgba(13,5,17,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 300; color: var(--white);
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo span { color: var(--rose-lt); font-style: italic; }
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--faint); text-decoration: none;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--rose-lt); }
+
+/* ─── HERO ──────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; padding: 120px 24px 80px;
+  background: radial-gradient(ellipse 80% 70% at 50% 40%, #2e0d3f, var(--deep) 65%);
+}
+.hero-hearts { position:absolute; inset:0; pointer-events:none; }
+.fh { position:absolute; color: rgba(232,116,138,.07); }
+.fh:nth-child(1){top:12%;left:8%;font-size:120px;animation:fl 8s ease-in-out infinite;}
+.fh:nth-child(2){top:8%;right:10%;font-size:72px;animation:fl 11s ease-in-out infinite 2s;}
+.fh:nth-child(3){top:40%;left:3%;font-size:48px;animation:fl 7s ease-in-out infinite 1s reverse;}
+.fh:nth-child(4){bottom:20%;right:5%;font-size:96px;animation:fl 9s ease-in-out infinite 3s;}
+.fh:nth-child(5){bottom:30%;left:12%;font-size:60px;animation:fl 6s ease-in-out infinite 0.5s reverse;}
+.fh:nth-child(6){top:60%;right:14%;font-size:40px;animation:fl 10s ease-in-out infinite 4s;}
+@keyframes fl {
+  0%,100%{transform:translateY(0) rotate(-8deg);}
+  50%{transform:translateY(-24px) rotate(-8deg);}
+}
+.hero-eyebrow {
+  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 20px; position:relative;z-index:1;
+}
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(72px, 12vw, 130px);
+  font-weight: 300; line-height: .95;
+  color: var(--white); text-align: center;
+  position:relative;z-index:1; margin-bottom: 8px;
+}
+.hero-title em { color: var(--rose-lt); font-style: italic; }
+.hero-sub {
+  font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--faint); margin-bottom: 40px; position:relative;z-index:1;
+}
+.hero-tags {
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  position:relative;z-index:1; margin-bottom: 64px;
+}
+.tag {
+  padding: 5px 14px; border-radius: 20px; font-size: 11px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  border: 1px solid rgba(232,116,138,.25);
+  color: rgba(232,116,138,.6);
+}
+.hero-scroll {
+  position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  color: var(--faint); font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  animation: scrollbounce 2s ease-in-out infinite;
+}
+.hero-scroll svg { animation: scrollarrow 2s ease-in-out infinite; }
+@keyframes scrollbounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+@keyframes scrollarrow  { 0%,100%{opacity:.3} 50%{opacity:.9} }
+
+/* ─── SECTIONS ──────────────────────────────────────────── */
+section {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto; padding: 100px 48px;
+}
+section + section { border-top: 1px solid var(--border); }
+.section-eyebrow {
+  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 14px; display:flex; align-items:center; gap:10px;
+}
+.section-eyebrow::after { content:''; flex:0 0 40px; height:1px; background:var(--rose); opacity:.4; }
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 56px); font-weight: 300;
+  color: var(--white); margin-bottom: 20px; line-height: 1.1;
+}
+.section-title em { color: var(--rose-lt); font-style: italic; }
+.section-lead { font-size: 16px; color: var(--dim); max-width: 640px; line-height: 1.75; }
+
+/* ─── OVERVIEW GRID ─────────────────────────────────────── */
+.pillars {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px; margin-top: 48px;
+}
+.pillar {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px;
+  transition: border-color .2s, background .2s;
+}
+.pillar:hover { border-color: rgba(232,116,138,.25); background: rgba(232,116,138,.03); }
+.pillar-icon { font-size: 28px; margin-bottom: 14px; }
+.pillar-title { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 6px; }
+.pillar-text  { font-size: 13px; color: var(--faint); line-height: 1.65; }
+
+/* ─── COLORS ────────────────────────────────────────────── */
+.color-group { margin-top: 48px; }
+.color-group-title {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--faint); margin-bottom: 16px;
+}
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.swatch {
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border);
+  transition: transform .2s, box-shadow .2s;
+  cursor: default;
+}
+.swatch:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+.swatch-color { height: 80px; }
+.swatch-info { padding: 12px 14px; background: rgba(255,255,255,.03); }
+.swatch-hex {
+  font-family: 'DM Mono', monospace; font-size: 13px;
+  color: var(--white); margin-bottom: 2px;
+}
+.swatch-name { font-size: 12px; font-weight: 500; color: var(--dim); margin-bottom: 4px; }
+.swatch-use  { font-size: 11px; color: var(--faint); line-height: 1.5; }
+
+/* ─── TYPOGRAPHY ────────────────────────────────────────── */
+.font-showcase { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+@media(max-width:700px){.font-showcase{grid-template-columns:1fr;}}
+.font-card {
+  background: rgba(255,255,255,.03); border: 1px solid var(--border);
+  border-radius: 20px; padding: 32px; overflow: hidden;
+}
+.font-card-specimen { font-size: 48px; font-weight: 300; color: var(--white); margin-bottom: 16px; line-height: 1; }
+.font-card-specimen em { font-style: italic; color: var(--rose-lt); }
+.font-card-name { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--rose); margin-bottom: 4px; }
+.font-card-meta { font-size: 12px; color: var(--faint); }
+
+.type-scale { margin-top: 48px; }
+.type-row {
+  display: grid; grid-template-columns: 180px 60px 140px 1fr;
+  gap: 16px; align-items: center; padding: 14px 20px;
+  border-radius: 12px; transition: background .15s;
+}
+.type-row:hover { background: rgba(255,255,255,.025); }
+.type-row + .type-row { border-top: 1px solid rgba(255,255,255,.04); }
+.type-row-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--faint); }
+.type-row-size  { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--gold); }
+.type-row-weight{ font-size: 12px; color: rgba(255,255,255,.3); }
+.type-row-specimen { color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ─── APP STYLE ─────────────────────────────────────────── */
+.style-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px; margin-top: 48px;
+}
+.style-card {
+  background: rgba(255,255,255,.03); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 28px 24px;
+  transition: border-color .2s;
+}
+.style-card:hover { border-color: rgba(232,116,138,.2); }
+.style-card-title {
+  font-size: 13px; font-weight: 500; color: var(--white);
+  margin-bottom: 10px; display:flex; align-items:center; gap:10px;
+}
+.style-card-title::before { content:''; display:block; width:3px; height:14px; background:var(--rose); border-radius:2px; }
+.style-card p { font-size: 13px; color: var(--faint); line-height: 1.7; }
+
+/* btn preview row */
+.btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top: 14px; }
+.btn-prev {
+  padding: 9px 20px; border-radius: 10px; font-size: 12px;
+  font-family: 'DM Sans', sans-serif; font-weight: 500; cursor:default; border: none;
+}
+.bp-primary { background: linear-gradient(135deg, var(--rose), var(--rose-dk)); color:#fff; box-shadow:0 6px 18px rgba(232,116,138,.3); }
+.bp-ghost   { background: transparent; color: var(--dim); border: 1px solid var(--border) !important; }
+.bp-danger  { background: rgba(255,60,60,.09); color:#ff6b6b; border: 1px solid rgba(255,60,60,.2) !important; }
+
+/* badge preview */
+.badge-prev {
+  display:inline-flex; align-items:center; gap:8px; margin-top:12px;
+  background: rgba(94,245,160,.05); border:1px solid rgba(94,245,160,.14);
+  border-radius:10px; padding:9px 12px; font-size:12px; color:rgba(94,245,160,.7);
+}
+
+/* step preview */
+.steps-prev { display:flex; gap:6px; align-items:center; margin-top:12px; }
+.sd { width:8px;height:8px;border-radius:50%; }
+.sd-done{ background:rgba(232,116,138,.45); }
+.sd-on  { background:var(--rose);width:24px;border-radius:4px; }
+.sd-off { background:rgba(255,255,255,.14); }
+
+/* ─── SCREENS ───────────────────────────────────────────── */
+.screens-intro { margin-bottom: 56px; }
+.screens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 40px;
+}
+.screen-entry { display:flex; flex-direction:column; gap:16px; }
+.screen-label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--rose); }
+.screen-desc  { font-size:13px; color:var(--faint); line-height:1.65; }
+
+/* phone shell */
+.phone {
+  width: 100%; max-width: 300px;
+  aspect-ratio: 390 / 780;
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  border: 1.5px solid rgba(255,255,255,.1);
+  box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+  background: #0d0511;
+}
+.phone-screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+}
+
+/* phone inner layouts */
+.p-aw {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  padding: 32px 18px 18px;
+  background: radial-gradient(ellipse 90% 60% at 50% 30%, #35104a, #0d0511 65%);
+  overflow: hidden;
+}
+.p-success-bg {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; padding:24px 18px;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, #2e1040, #0d0511 70%);
+}
+.p-blocked-bg {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; padding:24px 18px;
+  background: radial-gradient(ellipse 70% 50% at 50% 38%, #2a0d0d, #0d0511 70%);
+}
+.p-unpair-bg {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; padding:24px 18px;
+  background: radial-gradient(ellipse 68% 48% at 50% 36%, #1e0a0a, #0d0511 70%);
+}
+.p-profile-bg {
+  flex:1; overflow:hidden;
+  background: #130818;
+  padding: 20px 14px 10px;
+  display:flex; flex-direction:column; gap:6px;
+}
+
+/* mini UI elements */
+.m-steps { display:flex; gap:4px; align-items:center; margin-bottom:6px; }
+.m-sd{ width:5px;height:5px;border-radius:50%; }
+.m-sd-done{ background:rgba(232,116,138,.45); }
+.m-sd-on{ background:var(--rose);width:14px;border-radius:3px; }
+.m-sd-off{ background:rgba(255,255,255,.14); }
+
+.m-title {
+  font-family:'Cormorant Garamond',serif; font-size:13px; font-weight:300;
+  color:#fff; margin-bottom:2px;
+}
+.m-title em { font-style:italic; color:#f5a8b8; }
+.m-sub { font-size:7px; color:rgba(255,255,255,.4); margin-bottom:8px; }
+.m-inp {
+  width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08);
+  border-radius:6px; padding:5px 8px; color:#fff; font-size:7px;
+  font-family:'DM Sans',sans-serif; margin-bottom:4px;
+}
+.m-btn {
+  width:100%; padding:6px; border-radius:7px; border:none;
+  font-size:7px; font-weight:500; text-align:center; margin-bottom:3px;
+  font-family:'DM Sans',sans-serif;
+}
+.m-btn-p { background:linear-gradient(135deg,#e8748a,#c45578); color:#fff; }
+.m-btn-g { background:rgba(255,255,255,.07); color:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.08)!important; }
+.m-btn-ghost { background:transparent; color:rgba(255,255,255,.35); font-size:6.5px; }
+.m-btn-danger { background:rgba(255,60,60,.1); color:#ff6b6b; border:1px solid rgba(255,60,60,.2)!important; }
+.m-card {
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.07);
+  border-radius:10px; padding:8px 10px; margin-bottom:5px;
+  font-size:7px; color:rgba(255,255,255,.35);
+}
+.m-boo-box {
+  background:linear-gradient(135deg,rgba(107,58,110,.22),rgba(50,15,60,.38));
+  border:1px solid rgba(107,58,110,.38); border-radius:9px;
+  padding:10px; text-align:center; margin-bottom:5px; width:100%;
+}
+.m-boo-id {
+  font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+  font-weight:300; background:linear-gradient(135deg,#fff,#f5a8b8);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.m-badge {
+  display:flex; align-items:flex-start; gap:5px;
+  background:rgba(94,245,160,.05); border:1px solid rgba(94,245,160,.14);
+  border-radius:7px; padding:6px 8px; width:100%; margin-bottom:4px;
+  font-size:6.5px; color:rgba(94,245,160,.7); line-height:1.5;
+}
+.m-div {
+  display:flex; align-items:center; gap:6px; margin:5px 0;
+  font-size:6.5px; color:rgba(255,255,255,.2);
+}
+.m-div-line { flex:1; height:1px; background:rgba(255,255,255,.08); }
+.m-duo { display:flex; align-items:center; margin-bottom:6px; }
+.m-av {
+  width:32px; height:32px; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:12px; border:2px solid #0d0511; overflow:hidden;
+}
+.m-av-you { background:linear-gradient(135deg,#e8748a,#9b3a6e); }
+.m-av-them{ background:linear-gradient(135deg,#7eb8f5,#3a6eb4); margin-left:-8px; }
+.m-heart-ico { margin:0 -3px; z-index:1; color:#e8748a; font-size:11px; }
+.m-blocked-ico {
+  width:36px; height:36px; border-radius:50%; background:rgba(255,80,80,.09);
+  border:1.5px solid rgba(255,80,80,.22); display:flex; align-items:center;
+  justify-content:center; color:#ff6b6b; font-size:14px; margin-bottom:4px;
+}
+.m-un-ico {
+  width:36px; height:36px; border-radius:50%; background:rgba(255,60,60,.08);
+  border:1.5px solid rgba(255,60,60,.18); display:flex; align-items:center;
+  justify-content:center; color:#ff6b6b; font-size:13px; margin-bottom:4px;
+}
+.m-pill {
+  display:inline-flex; align-items:center; gap:3px;
+  border-radius:20px; padding:2px 7px; font-size:6px;
+  letter-spacing:1px; text-transform:uppercase; margin-bottom:5px;
+}
+.m-pill-red { background:rgba(255,80,80,.1); border:1px solid rgba(255,80,80,.22); color:#ff8a8a; }
+.m-inp-row { display:flex; gap:4px; width:100%; margin-bottom:4px; }
+.m-dial {
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08);
+  border-radius:6px 0 0 6px; padding:5px 6px; color:rgba(255,255,255,.5);
+  font-size:7px; white-space:nowrap; border-right:none;
+}
+.m-inp-noradius-l {
+  flex:1; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08);
+  border-radius:0 6px 6px 0; padding:5px 8px; color:rgba(255,255,255,.3);
+  font-size:7px;
+}
+.m-rule-row {
+  display:flex; align-items:center; gap:4px; margin-bottom:3px;
+  font-size:6.5px;
+}
+.m-rule-dot {
+  width:10px; height:10px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:6px;
+}
+.m-rule-on  { background:rgba(94,245,160,.15); border:1px solid rgba(94,245,160,.4); color:#5ef5a0; }
+.m-rule-off { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); }
+.m-av-zone {
+  width:52px; height:52px; border-radius:50%;
+  border:1.5px dashed rgba(232,116,138,.4);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; cursor:pointer; background:rgba(232,116,138,.05); color:#e8748a;
+  font-size:16px; align-self:center; margin: 6px auto;
+}
+.m-av-ring {
+  width:44px; height:44px; border-radius:50%; border:1.5px solid rgba(255,255,255,.08);
+  background:linear-gradient(135deg,#e8748a,#6b3a6e); display:flex;
+  align-items:center; justify-content:center; font-size:16px; align-self:center;
+  margin:4px auto;
+}
+.m-sec-lbl { font-size:6.5px; color:rgba(255,255,255,.25); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+.m-cpl-badge {
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius:7px; padding:6px 8px; text-align:center; width:100%; margin-bottom:5px;
+  font-size:6.5px; color:rgba(255,255,255,.3);
+}
+.m-warn {
+  display:flex; gap:4px; align-items:flex-start;
+  background:rgba(255,60,60,.05); border:1px solid rgba(255,60,60,.13);
+  border-radius:6px; padding:6px 7px; margin-top:5px;
+  font-size:6.5px; color:#ff8a8a;
+}
+.m-logo-heart { font-size:16px; color:#e8748a; margin-bottom:4px; }
+.m-logo-text {
+  font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300;
+  color:#fff; line-height:1; margin-bottom:2px;
+}
+.m-back-row {
+  display:flex; align-items:center; gap:6px; margin-bottom:8px;
+}
+.m-back-btn {
+  background:rgba(255,255,255,.07); border:none; border-radius:5px;
+  padding:3px 5px; color:rgba(255,255,255,.4); font-size:8px; cursor:default;
+}
+
+/* ─── COMPONENTS ────────────────────────────────────────── */
+.comp-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:48px;
+}
+@media(max-width:700px){.comp-grid{grid-template-columns:1fr;}}
+.comp-table {
+  background:rgba(255,255,255,.02); border:1px solid var(--border);
+  border-radius:16px; overflow:hidden;
+}
+.comp-table-head {
+  display:grid; padding:12px 18px;
+  background:rgba(107,58,110,.15);
+  font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--rose);
+}
+.comp-row {
+  display:grid; padding:10px 18px;
+  border-top:1px solid rgba(255,255,255,.04);
+  transition:background .15s;
+}
+.comp-row:hover { background:rgba(255,255,255,.02); }
+.comp-row:nth-child(even) { background:rgba(255,255,255,.01); }
+.comp-row:nth-child(even):hover { background:rgba(255,255,255,.025); }
+.mono { font-family:'DM Mono',monospace; font-size:12px; color:var(--rose-lt); }
+.dim  { color:var(--faint); font-size:12px; }
+.gold { font-family:'DM Mono',monospace; font-size:11px; color:var(--gold); }
+
+/* ─── FILE STRUCTURE ────────────────────────────────────── */
+.filetree {
+  background:rgba(255,255,255,.02); border:1px solid var(--border);
+  border-radius:20px; padding:32px; margin-top:48px;
+  font-family:'DM Mono',monospace; font-size:13px; line-height:2;
+  overflow-x:auto;
+}
+.ft-dir  { color:rgba(255,255,255,.55); }
+.ft-file { color:var(--rose-lt); }
+.ft-note { color:rgba(255,255,255,.22); }
+.ft-line { display:flex; gap:12px; }
+
+.flow-diagram {
+  margin-top:32px;
+  background:rgba(255,255,255,.02); border:1px solid var(--border);
+  border-radius:20px; padding:28px 32px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.flow-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.flow-node {
+  padding:6px 14px; border-radius:20px; font-size:12px; font-weight:500;
+  background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--white);
+  white-space:nowrap;
+}
+.flow-node.active { background:rgba(232,116,138,.12); border-color:rgba(232,116,138,.3); color:var(--rose-lt); }
+.flow-node.success{ background:rgba(94,245,160,.07); border-color:rgba(94,245,160,.2); color:var(--mint); }
+.flow-node.danger { background:rgba(255,60,60,.07); border-color:rgba(255,60,60,.18); color:#ff8a8a; }
+.flow-arrow { color:var(--faint); font-size:14px; }
+.flow-note  { font-size:11px; color:var(--faint); font-style:italic; }
+
+/* ─── FOOTER ────────────────────────────────────────────── */
+footer {
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:40px 48px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:16px;
+}
+.footer-logo { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300; color:var(--white); }
+.footer-logo em { color:var(--rose-lt); font-style:italic; }
+.footer-meta { font-size:12px; color:var(--faint); }
+
+/* ─── FEATURE CARDS ─────────────────────────────────────── */
+.feat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.feat-card {
+  background: rgba(255,255,255,.03); border: 1px solid var(--border);
+  border-radius: 20px; padding: 24px;
+  transition: border-color .2s, background .2s;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.feat-card:hover { border-color: rgba(232,116,138,.2); background: rgba(232,116,138,.02); }
+.feat-card-head { display: flex; align-items: flex-start; gap: 14px; }
+.feat-icon { font-size: 26px; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+.feat-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 6px; }
+.feat-phase-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.feat-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.feat-list li {
+  font-size: 12.5px; color: var(--faint); padding-left: 14px; position: relative; line-height: 1.55;
+}
+.feat-list li::before { content: '·'; position: absolute; left: 0; color: var(--rose); }
+.feat-note {
+  font-size: 11px; color: rgba(255,255,255,.2); letter-spacing: .5px;
+  border-top: 1px solid rgba(255,255,255,.05); padding-top: 10px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* phase + priority pills */
+.fpill {
+  display: inline-block; padding: 2px 9px; border-radius: 20px;
+  font-size: 10px; font-weight: 500; letter-spacing: .5px;
+}
+.fpill-p1 { background: rgba(200,200,200,.1); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.12); }
+.fpill-p2 { background: rgba(201,169,110,.1); color: var(--gold); border: 1px solid rgba(201,169,110,.25); }
+.fpill-p3 { background: rgba(120,180,255,.08); color: #7eb8f5; border: 1px solid rgba(120,180,255,.2); }
+.fpill-p4 { background: rgba(94,245,160,.06); color: var(--mint); border: 1px solid rgba(94,245,160,.18); }
+.fpill-p5 { background: rgba(232,116,138,.1); color: var(--rose-lt); border: 1px solid rgba(232,116,138,.2); }
+.fpill-crit { background: rgba(255,60,60,.1); color: #ff8a8a; border: 1px solid rgba(255,60,60,.22); }
+.fpill-high { background: rgba(255,160,60,.08); color: #ffb347; border: 1px solid rgba(255,160,60,.2); }
+.fpill-norm { background: rgba(255,255,255,.07); color: var(--dim); border: 1px solid var(--border); }
+
+/* LDR grid */
+.ldr-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.ldr-card {
+  background: rgba(94,245,160,.025); border: 1px solid rgba(94,245,160,.1);
+  border-radius: 16px; padding: 20px 18px;
+  transition: border-color .2s;
+}
+.ldr-card:hover { border-color: rgba(94,245,160,.22); }
+.ldr-icon  { font-size: 22px; margin-bottom: 10px; }
+.ldr-title { font-size: 13px; font-weight: 500; color: var(--white); margin-bottom: 6px; }
+.ldr-desc  { font-size: 12px; color: var(--faint); line-height: 1.6; }
+
+/* ─── PROGRESS TABLE ─────────────────────────────────────── */
+.phase-legend {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 40px;
+}
+.phase-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: 24px;
+  font-size: 12px; font-weight: 500;
+}
+.phase-badge span { font-size: 11px; font-weight: 400; opacity: .7; }
+.ph1 { background: rgba(200,200,200,.08); color: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.1); }
+.ph2 { background: rgba(201,169,110,.1); color: var(--gold); border: 1px solid rgba(201,169,110,.22); }
+.ph3 { background: rgba(120,180,255,.08); color: #7eb8f5; border: 1px solid rgba(120,180,255,.18); }
+.ph4 { background: rgba(94,245,160,.07); color: var(--mint); border: 1px solid rgba(94,245,160,.18); }
+.ph5 { background: rgba(232,116,138,.08); color: var(--rose-lt); border: 1px solid rgba(232,116,138,.18); }
+
+.prog-table {
+  background: rgba(255,255,255,.02); border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden; margin-top: 28px;
+}
+.prog-head {
+  display: grid; grid-template-columns: 2fr .7fr .7fr .8fr;
+  padding: 12px 22px;
+  background: rgba(107,58,110,.18);
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--rose);
+}
+.prog-row {
+  display: grid; grid-template-columns: 2fr .7fr .7fr .8fr;
+  padding: 12px 22px; align-items: center;
+  border-top: 1px solid rgba(255,255,255,.04);
+  transition: background .15s;
+}
+.prog-row:hover { background: rgba(255,255,255,.02); }
+.prog-row-ldr   { opacity: .65; }
+.prog-row-ldr:hover { opacity: 1; }
+.prog-feature { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--white); }
+.prog-icon { font-size: 15px; flex-shrink: 0; }
+
+/* priority badges */
+.pri-badge {
+  display: inline-block; padding: 2px 9px; border-radius: 20px;
+  font-size: 10px; font-weight: 500;
+}
+.pri-crit { background: rgba(255,60,60,.12); color: #ff8a8a; border: 1px solid rgba(255,60,60,.25); }
+.pri-high { background: rgba(255,160,60,.1); color: #ffb347; border: 1px solid rgba(255,160,60,.22); }
+.pri-norm { background: rgba(255,255,255,.07); color: var(--dim); border: 1px solid var(--border); }
+.pri-low  { background: rgba(94,245,160,.07); color: var(--mint); border: 1px solid rgba(94,245,160,.18); }
+
+/* status badges */
+.stat-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 10px; font-weight: 500;
+}
+.stat-ns  { background: rgba(255,255,255,.06); color: rgba(255,255,255,.35); border: 1px solid rgba(255,255,255,.1); }
+.stat-ongoing { background: rgba(120,180,255,.1); color: #7eb8f5; border: 1px solid rgba(120,180,255,.22); }
+.stat-rev { background: rgba(201,169,110,.1); color: var(--gold); border: 1px solid rgba(201,169,110,.22); }
+.stat-done{ background: rgba(94,245,160,.1); color: var(--mint); border: 1px solid rgba(94,245,160,.22); }
+
+/* responsive for new sections */
+@media(max-width: 900px) {
+  .feat-grid { grid-template-columns: 1fr 1fr; }
+  .ldr-grid  { grid-template-columns: repeat(3, 1fr); }
+  .prog-head, .prog-row { grid-template-columns: 2fr .7fr .8fr; }
+  .prog-row > span:nth-child(3) { display: none; }
+  .prog-head > span:nth-child(3) { display: none; }
+}
+@media(max-width: 600px) {
+  .feat-grid { grid-template-columns: 1fr; }
+  .ldr-grid  { grid-template-columns: 1fr 1fr; }
+  .prog-head, .prog-row { grid-template-columns: 1fr auto; }
+  .prog-row > span:nth-child(2),
+  .prog-row > span:nth-child(3) { display: none; }
+  .prog-head > span:nth-child(2),
+  .prog-head > span:nth-child(3) { display: none; }
+  .phase-legend { gap: 8px; }
+  .phase-badge { font-size: 11px; padding: 6px 11px; }
+}
+@media(max-width: 380px) {
+  .ldr-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── SCROLL REVEAL ─────────────────────────────────────── */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity:1; transform:none; }
+
+/* ─── HAMBURGER NAV ──────────────────────────────────────── */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center;
+  gap: 5px; width: 36px; height: 36px; cursor: pointer;
+  background: transparent; border: none; padding: 4px;
+}
+.hamburger span {
+  display: block; height: 1.5px; background: var(--dim);
+  border-radius: 2px; transition: all .25s ease;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.mobile-drawer {
+  display: none;
+  position: fixed; top: 64px; left: 0; right: 0; bottom: 0; z-index: 99;
+  background: rgba(13,5,17,.97);
+  backdrop-filter: blur(20px);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px;
+  transform: translateY(-100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+  opacity: 0;
+}
+.mobile-drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+.mobile-drawer a {
+  font-size: 28px; font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; color: rgba(255,255,255,.55);
+  text-decoration: none; padding: 12px 24px;
+  transition: color .2s;
+  letter-spacing: 1px;
+}
+.mobile-drawer a:hover,
+.mobile-drawer a:active { color: var(--rose-lt); }
+.mobile-drawer-divider {
+  width: 32px; height: 1px; background: var(--border); margin: 8px 0;
+}
+
+/* ─── RESPONSIVE BREAKPOINTS ─────────────────────────────── */
+
+/* ── Tablet (≤ 900px) ── */
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .mobile-drawer { display: flex; }
+
+  section { padding: 72px 28px; }
+
+  .hero { padding: 100px 20px 72px; }
+  .fh:nth-child(1){ font-size: 80px; }
+  .fh:nth-child(2){ font-size: 48px; }
+  .fh:nth-child(3){ font-size: 36px; }
+  .fh:nth-child(4){ font-size: 64px; }
+  .fh:nth-child(5){ font-size: 44px; }
+  .fh:nth-child(6){ font-size: 28px; }
+
+  .pillars { grid-template-columns: 1fr 1fr; }
+  .font-showcase { grid-template-columns: 1fr; }
+  .style-grid { grid-template-columns: 1fr 1fr; }
+  .comp-grid { grid-template-columns: 1fr; }
+
+  .screens-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .screen-entry { align-items: center; text-align: center; }
+  .phone { max-width: 220px; }
+
+  .filetree { padding: 20px; font-size: 11px; }
+  .flow-diagram { padding: 20px 22px; }
+
+  footer { padding: 32px 28px; }
+
+  /* type scale: hide weight col on tablet */
+  .type-row { grid-template-columns: 150px 56px 1fr; }
+  .type-row-weight { display: none; }
+}
+
+/* ── Mobile (≤ 600px) ── */
+@media (max-width: 600px) {
+  nav { padding: 0 18px; height: 58px; }
+  .nav-logo { font-size: 19px; }
+  .mobile-drawer { top: 58px; }
+
+  section { padding: 56px 18px; }
+
+  .hero { padding: 90px 18px 64px; }
+  .hero-eyebrow { font-size: 10px; letter-spacing: 3px; }
+  .hero-sub { font-size: 11px; letter-spacing: 2px; margin-bottom: 28px; }
+  .hero-tags { gap: 7px; margin-bottom: 48px; }
+  .tag { font-size: 10px; padding: 4px 11px; }
+
+  /* hide some hearts on very small screens */
+  .fh:nth-child(3),
+  .fh:nth-child(5) { display: none; }
+  .fh:nth-child(1){ font-size: 56px; top:10%; left:4%; }
+  .fh:nth-child(2){ font-size: 36px; top:6%; right:5%; }
+  .fh:nth-child(4){ font-size: 48px; bottom:22%; right:3%; }
+  .fh:nth-child(6){ font-size: 24px; top:55%; right:8%; }
+
+  .section-title { font-size: clamp(30px, 8vw, 44px); }
+  .section-lead { font-size: 14px; }
+
+  /* single column everything */
+  .pillars { grid-template-columns: 1fr; }
+  .style-grid { grid-template-columns: 1fr; }
+  .screens-grid { grid-template-columns: 1fr; gap: 40px; }
+  .screen-entry { align-items: center; text-align: center; }
+
+  .phone { max-width: 260px; border-radius: 30px; }
+
+  /* color swatches — 2 per row */
+  .swatches { grid-template-columns: 1fr 1fr; }
+  .swatch-color { height: 60px; }
+  .swatch-info { padding: 10px 12px; }
+  .swatch-hex  { font-size: 11px; }
+  .swatch-name { font-size: 11px; }
+  .swatch-use  { font-size: 10px; }
+
+  /* font cards */
+  .font-card { padding: 22px 20px; }
+  .font-card-specimen { font-size: 36px; }
+
+  /* type scale: minimal 2-col on mobile */
+  .type-row {
+    grid-template-columns: 1fr auto;
+    gap: 8px; padding: 12px 14px;
+  }
+  .type-row-label  { font-size: 10px; }
+  .type-row-size   { display: none; }
+  .type-row-weight { display: none; }
+  .type-row-specimen { grid-column: 1 / -1; font-size: 13px; white-space: normal; }
+
+  /* comp tables — make readable on small screens */
+  .comp-table-head,
+  .comp-row { padding: 10px 14px; }
+  .mono { font-size: 11px; }
+  .dim  { font-size: 11px; }
+  .gold { font-size: 10px; }
+
+  .filetree { padding: 16px; font-size: 10px; line-height: 1.9; }
+  .ft-note  { display: none; }
+
+  .flow-diagram { padding: 16px 18px; gap: 8px; }
+  .flow-node { font-size: 11px; padding: 5px 11px; }
+  .flow-arrow { font-size: 12px; }
+  .flow-note { display: none; }
+
+  .btn-prev { font-size: 11px; padding: 8px 14px; }
+  .badge-prev { font-size: 11px; }
+
+  footer { padding: 28px 18px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .footer-logo { font-size: 18px; }
+  .footer-meta { font-size: 11px; }
+}
+
+/* ── Very small (≤ 380px) ── */
+@media (max-width: 380px) {
+  section { padding: 48px 14px; }
+  .swatches { grid-template-columns: 1fr; }
+  .phone { max-width: 90vw; }
+  .filetree { font-size: 9px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">♥ My <span>Boo</span></div>
+  <div class="nav-links">
+    <a href="#overview">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#progress">Progress</a>
+    <a href="#colors">Colors</a>
+    <a href="#typography">Type</a>
+    <a href="#style">Style</a>
+    <a href="#screens">Screens</a>
+    <a href="#structure">Structure</a>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="drawer">
+  <a href="#overview"   onclick="closeDrawer()">Overview</a>
+  <a href="#features"   onclick="closeDrawer()">Features</a>
+  <a href="#progress"   onclick="closeDrawer()">Progress</a>
+  <div class="mobile-drawer-divider"></div>
+  <a href="#colors"     onclick="closeDrawer()">Colors</a>
+  <a href="#typography" onclick="closeDrawer()">Typography</a>
+  <a href="#style"      onclick="closeDrawer()">App Style</a>
+  <div class="mobile-drawer-divider"></div>
+  <a href="#screens"    onclick="closeDrawer()">Screens</a>
+  <a href="#structure"  onclick="closeDrawer()">Structure</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-hearts">
+    <div class="fh">♥</div><div class="fh">♥</div><div class="fh">♥</div>
+    <div class="fh">♥</div><div class="fh">♥</div><div class="fh">♥</div>
+  </div>
+  <div class="hero-eyebrow">Design Document · Phase 1.1</div>
+  <h1 class="hero-title">My <em>Boo</em></h1>
+  <p class="hero-sub">Just the two of you</p>
+  <div class="hero-tags">
+    <span class="tag">Auth &amp; Pairing</span>
+    <span class="tag">15 Screens</span>
+    <span class="tag">Version 1.1</span>
+    <span class="tag">React · Vite</span>
+    <span class="tag">2026</span>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</div>
+
+<!-- ── 1. OVERVIEW ─────────────────────────────────────── -->
+<section id="overview">
+  <div class="reveal">
+    <p class="section-eyebrow">01</p>
+    <h2 class="section-title">App <em>Overview</em></h2>
+    <p class="section-lead">A private, intimate mobile app built exclusively for couples. Every design decision serves one goal — making the app feel like a warm personal space that belongs only to the two people in the relationship.</p>
+  </div>
+  <div class="pillars reveal" style="transition-delay:.1s">
+    <div class="pillar"><div class="pillar-icon">🔒</div><div class="pillar-title">Private by Design</div><p class="pillar-text">Database-level rules block all third-party access. Only the two paired users can ever read or write their couple space.</p></div>
+    <div class="pillar"><div class="pillar-icon">💜</div><div class="pillar-title">Warm &amp; Intimate</div><p class="pillar-text">Not a social network — a personal sanctuary. Deep velvet backgrounds, soft rose accents, and serif display type create a cozy, romantic feel.</p></div>
+    <div class="pillar"><div class="pillar-icon">✦</div><div class="pillar-title">Minimal UI</div><p class="pillar-text">Every screen is clean and purposeful. No clutter — just the essentials, beautifully presented. Each screen feels like it belongs only to them.</p></div>
+    <div class="pillar"><div class="pillar-icon">📍</div><div class="pillar-title">LDR First</div><p class="pillar-text">Designed for long-distance couples, but valuable for all. Features focus on togetherness regardless of physical distance.</p></div>
+  </div>
+</section>
+
+
+<!-- ── 2. FEATURES ─────────────────────────────────────── -->
+<section id="features">
+  <div class="reveal">
+    <p class="section-eyebrow">02</p>
+    <h2 class="section-title">Feature <em>Roadmap</em></h2>
+    <p class="section-lead">Everything My Boo will do — grouped by category. Core features ship across Phases 1–3. LDR features are lower priority but planned for later phases.</p>
+  </div>
+
+  <div style="margin-top:48px;">
+
+    <!-- Core Features -->
+    <p class="color-group-title" style="margin-bottom:16px;">Core Features</p>
+    <div class="feat-grid reveal" style="transition-delay:.05s;">
+
+      <div class="feat-card">
+        <div class="feat-card-head">
+          <span class="feat-icon">👫</span>
+          <div>
+            <div class="feat-title">Couple Pairing &amp; Profile</div>
+            <div class="feat-phase-row"><span class="fpill fpill-p1">Phase 1</span><span class="fpill fpill-crit">Critical</span></div>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li>Register and link with a partner via 9-character Boo ID</li>
+          <li>Exclusive two-person profile — no third party can join</li>
+          <li>Google Sign-In + Boo Private Login (email, phone, country, birthday)</li>
+          <li>Apple Sign-In required before iOS App Store release</li>
+          <li>Block pairing on already-paired accounts at DB level</li>
+          <li>Basic unpairing flow — either partner can unpair</li>
+        </ul>
+        <div class="feat-note">🔐 Auth · Boo ID · Couple Profile · Firebase/Supabase Auth</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-head">
+          <span class="feat-icon">💬</span>
+          <div>
+            <div class="feat-title">Chat &amp; Media Sharing</div>
+            <div class="feat-phase-row"><span class="fpill fpill-p2">Phase 2</span><span class="fpill fpill-high">High</span></div>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li>Real-time private messaging between partners</li>
+          <li>Share images, videos, and files within the chat</li>
+          <li>Share social media clips — Reels, TikToks, YouTube videos</li>
+        </ul>
+        <div class="feat-note">💡 Real-time · Firebase Firestore / Supabase Realtime</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-head">
+          <span class="feat-icon">🖼</span>
+          <div>
+            <div class="feat-title">Private Gallery</div>
+            <div class="feat-phase-row"><span class="fpill fpill-p2">Phase 2</span><span class="fpill fpill-high">High</span></div>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li>Shared photo gallery exclusive to the couple</li>
+          <li>No one outside the couple can view or access</li>
+          <li>A safe space to store memories together</li>
+        </ul>
+        <div class="feat-note">🔒 Cloud Storage · Private URL access only</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-head">
+          <span class="feat-icon">🏆</span>
+          <div>
+            <div class="feat-title">Milestone Tracker</div>
+            <div class="feat-phase-row"><span class="fpill fpill-p2">Phase 2</span><span class="fpill fpill-high">High</span></div>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li>Home screen counter showing time together</li>
+          <li>Next upcoming milestone — 6 months, 1 year, anniversaries</li>
+          <li>Celebration moment front and center on the home screen</li>
+        </ul>
+        <div class="feat-note">📅 couples.created_at · Date math · Home screen widget</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-head">
+          <span class="feat-icon">📞</span>
+          <div>
+            <div class="feat-title">Calls &amp; Watch Together</div>
+            <div class="feat-phase-row"><span class="fpill fpill-p3">Phase 3</span><span class="fpill fpill-norm">Normal</span></div>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li>Voice call feature between partners</li>
+          <li>Video call feature between partners</li>
+          <li>Watch Together — stream movies &amp; shows in sync during a call</li>
+          <li>Listen Together — play and sync music during a call</li>
+        </ul>
+        <div class="feat-note">🎥 WebRTC · Agora / LiveKit · Screen share sync</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-card-head">
+          <span class="feat-icon">🎮</span>
+          <div>
+            <div class="feat-title">2-Player Mini Games</div>
+            <div class="feat-phase-row"><span class="fpill fpill-p3">Phase 3</span><span class="fpill fpill-norm">Normal</span></div>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li>Random mini-games designed for two players</li>
+          <li>Helps couples spend quality time regardless of distance</li>
+          <li>Casual and fun — no competitive pressure, just togetherness</li>
+        </ul>
+        <div class="feat-note">🕹 Real-time sync · WebSockets · Lightweight game engine</div>
+      </div>
+
+    </div>
+
+    <!-- LDR Features -->
+    <p class="color-group-title" style="margin-top:48px;margin-bottom:16px;">LDR Features <span style="font-size:10px;color:rgba(255,255,255,.2);margin-left:8px;letter-spacing:1px;">LOW PRIORITY</span></p>
+    <div class="ldr-grid reveal" style="transition-delay:.1s;">
+
+      <div class="ldr-card">
+        <div class="ldr-icon">💌</div>
+        <div class="ldr-title">Thinking of You</div>
+        <div class="ldr-desc">Send a quick nudge, hug, or kiss notification with a single tap.</div>
+      </div>
+      <div class="ldr-card">
+        <div class="ldr-icon">🎟</div>
+        <div class="ldr-title">Fun Tickets</div>
+        <div class="ldr-desc">Redeemable tickets — "Back Rub", "Pick the Movie", "Breakfast in Bed".</div>
+      </div>
+      <div class="ldr-card">
+        <div class="ldr-icon">⏱</div>
+        <div class="ldr-title">Countdown Timer</div>
+        <div class="ldr-desc">Visible countdown to the next time the couple sees each other in person.</div>
+      </div>
+      <div class="ldr-card">
+        <div class="ldr-icon">🌡</div>
+        <div class="ldr-title">Mood Check-in</div>
+        <div class="ldr-desc">A small daily prompt to share how you're feeling with your partner.</div>
+      </div>
+      <div class="ldr-card">
+        <div class="ldr-icon">📓</div>
+        <div class="ldr-title">Shared Journal</div>
+        <div class="ldr-desc">A private space where both partners can write notes or letters to each other.</div>
+      </div>
+      <div class="ldr-card">
+        <div class="ldr-icon">🌐</div>
+        <div class="ldr-title">Virtual Date Ideas</div>
+        <div class="ldr-desc">Curated suggestions for things to do together online.</div>
+      </div>
+      <div class="ldr-card">
+        <div class="ldr-icon">🎯</div>
+        <div class="ldr-title">Point Tracker</div>
+        <div class="ldr-desc">Track scores for board games, card games, and more. Forever mode + session mode with Game History database.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── 3. DEVELOPMENT PROGRESS ──────────────────────────── -->
+<section id="progress">
+  <div class="reveal">
+    <p class="section-eyebrow">03</p>
+    <h2 class="section-title">Dev <em>Progress</em></h2>
+    <p class="section-lead">Five phases from auth to LDR features. Phase 1 (Couple Registration &amp; Pairing) is the foundation — nothing else can ship without it.</p>
+  </div>
+
+  <!-- Phase legend -->
+  <div class="phase-legend reveal" style="transition-delay:.08s;">
+    <div class="phase-badge ph1">Phase 1 <span>Auth &amp; Pairing</span></div>
+    <div class="phase-badge ph2">Phase 2 <span>Core Features</span></div>
+    <div class="phase-badge ph3">Phase 3 <span>Calls &amp; Games</span></div>
+    <div class="phase-badge ph4">Phase 4 <span>LDR Features</span></div>
+    <div class="phase-badge ph5">Phase 5 <span>Polish &amp; Launch</span></div>
+  </div>
+
+  <!-- Progress table -->
+  <div class="prog-table reveal" style="transition-delay:.12s;">
+    <div class="prog-head">
+      <span>Feature</span>
+      <span>Phase</span>
+      <span>Priority</span>
+      <span>Status</span>
+    </div>
+
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">👫</span>Couple Registration &amp; Pairing</span>
+      <span><span class="fpill fpill-p1">Phase 1</span></span>
+      <span><span class="pri-badge pri-crit">Critical</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">💬</span>Private Chat</span>
+      <span><span class="fpill fpill-p2">Phase 2</span></span>
+      <span><span class="pri-badge pri-high">High</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🔗</span>Social Clip Sharing</span>
+      <span><span class="fpill fpill-p2">Phase 2</span></span>
+      <span><span class="pri-badge pri-norm">Normal</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🖼</span>Private Gallery</span>
+      <span><span class="fpill fpill-p2">Phase 2</span></span>
+      <span><span class="pri-badge pri-high">High</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🏆</span>Milestone Tracker</span>
+      <span><span class="fpill fpill-p2">Phase 2</span></span>
+      <span><span class="pri-badge pri-high">High</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🎙</span>Voice Calls</span>
+      <span><span class="fpill fpill-p3">Phase 3</span></span>
+      <span><span class="pri-badge pri-norm">Normal</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">📹</span>Video Calls</span>
+      <span><span class="fpill fpill-p3">Phase 3</span></span>
+      <span><span class="pri-badge pri-norm">Normal</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🎬</span>Watch Together</span>
+      <span><span class="fpill fpill-p3">Phase 3</span></span>
+      <span><span class="pri-badge pri-norm">Normal</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🎵</span>Listen Together</span>
+      <span><span class="fpill fpill-p3">Phase 3</span></span>
+      <span><span class="pri-badge pri-norm">Normal</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🎮</span>2-Player Mini Games</span>
+      <span><span class="fpill fpill-p3">Phase 3</span></span>
+      <span><span class="pri-badge pri-norm">Normal</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row prog-row-ldr">
+      <span class="prog-feature"><span class="prog-icon">💌</span>Thinking of You</span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="pri-badge pri-low">Low</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row prog-row-ldr">
+      <span class="prog-feature"><span class="prog-icon">🎟</span>Fun Tickets</span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="pri-badge pri-low">Low</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row prog-row-ldr">
+      <span class="prog-feature"><span class="prog-icon">⏱</span>Countdown Timer</span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="pri-badge pri-low">Low</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row prog-row-ldr">
+      <span class="prog-feature"><span class="prog-icon">🌡</span>Mood Check-in</span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="pri-badge pri-low">Low</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row prog-row-ldr">
+      <span class="prog-feature"><span class="prog-icon">📓</span>Shared Journal</span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="pri-badge pri-low">Low</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row prog-row-ldr">
+      <span class="prog-feature"><span class="prog-icon">🌐</span>Virtual Date Ideas</span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="pri-badge pri-low">Low</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+    <div class="prog-row prog-row-ldr">
+      <span class="prog-feature"><span class="prog-icon">🎯</span>Point Tracker</span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="pri-badge pri-low">Low</span></span>
+      <span><span class="stat-badge stat-ns">Not Started</span></span>
+    </div>
+  </div>
+
+  <!-- DB Schema note -->
+  <div class="reveal" style="transition-delay:.15s;margin-top:32px;">
+    <p class="color-group-title" style="margin-bottom:12px;">Database Schema (Core Tables)</p>
+    <div class="filetree" style="margin-top:0;font-size:12px;">
+<div class="ft-line"><span class="ft-dir">users</span></div>
+<div class="ft-line"><span class="ft-file">├── user_id</span><span class="ft-note">          Firebase/Supabase UID</span></div>
+<div class="ft-line"><span class="ft-file">├── boo_id</span><span class="ft-note">           9-char unique alphanumeric · permanent</span></div>
+<div class="ft-line"><span class="ft-file">├── name, email, phone, country, birthday</span></div>
+<div class="ft-line"><span class="ft-file">├── profile_picture_url</span><span class="ft-note">  string → Firebase/Supabase Storage</span></div>
+<div class="ft-line"><span class="ft-file">├── coupled_with</span><span class="ft-note">     FK → users.user_id · nullable</span></div>
+<div class="ft-line"><span class="ft-file">└── couple_id</span><span class="ft-note">        FK → couples.couple_id · nullable</span></div>
+<div class="ft-line" style="margin-top:8px;"><span class="ft-dir">couples</span></div>
+<div class="ft-line"><span class="ft-file">├── couple_id</span></div>
+<div class="ft-line"><span class="ft-file">├── partner_1_id</span><span class="ft-note">     FK → users.user_id</span></div>
+<div class="ft-line"><span class="ft-file">├── partner_2_id</span><span class="ft-note">     FK → users.user_id</span></div>
+<div class="ft-line"><span class="ft-file">└── created_at</span><span class="ft-note">       used for Milestone Tracker countdown</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. COLORS ───────────────────────────────────────── -->
+<section id="colors">
+  <div class="reveal">
+    <p class="section-eyebrow">04</p>
+    <h2 class="section-title">Color <em>Palette</em></h2>
+    <p class="section-lead">Built around deep moody backgrounds with warm rose and soft lavender accents. A late-night candlelit feeling — romantic without being garish.</p>
+  </div>
+
+  <div class="color-group reveal" style="transition-delay:.1s">
+    <p class="color-group-title">Primary Accent</p>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#e8748a"></div><div class="swatch-info"><div class="swatch-hex">#E8748A</div><div class="swatch-name">Rose</div><div class="swatch-use">Primary CTAs, hearts, active states</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#f5a8b8"></div><div class="swatch-info"><div class="swatch-hex">#F5A8B8</div><div class="swatch-name">Rose Light</div><div class="swatch-use">Italic headings, partner name accents</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#c45578"></div><div class="swatch-info"><div class="swatch-hex">#C45578</div><div class="swatch-name">Rose Dark</div><div class="swatch-use">Button hover, gradient end on CTAs</div></div></div>
+    </div>
+  </div>
+
+  <div class="color-group reveal" style="transition-delay:.15s">
+    <p class="color-group-title">Backgrounds</p>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#130818"></div><div class="swatch-info"><div class="swatch-hex">#130818</div><div class="swatch-name">Velvet</div><div class="swatch-use">Primary app background</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0d0511"></div><div class="swatch-info"><div class="swatch-hex">#0D0511</div><div class="swatch-name">Deep</div><div class="swatch-use">Darkest layer, gradient ends</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#6b3a6e"></div><div class="swatch-info"><div class="swatch-hex">#6B3A6E</div><div class="swatch-name">Plum</div><div class="swatch-use">Card backgrounds, Boo ID box</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#1e0a26"></div><div class="swatch-info"><div class="swatch-hex">#1E0A26</div><div class="swatch-name">Dark Row</div><div class="swatch-use">Alternate table rows, subtle sections</div></div></div>
+    </div>
+  </div>
+
+  <div class="color-group reveal" style="transition-delay:.2s">
+    <p class="color-group-title">Semantic &amp; Status</p>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#5ef5a0"></div><div class="swatch-info"><div class="swatch-hex">#5EF5A0</div><div class="swatch-name">Mint</div><div class="swatch-use">Success, security badges, privacy shields</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#c9a96e"></div><div class="swatch-info"><div class="swatch-hex">#C9A96E</div><div class="swatch-name">Gold</div><div class="swatch-use">Char counter warning, milestones</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.1)"></div><div class="swatch-info"><div class="swatch-hex">rgba(255,255,255,.42)</div><div class="swatch-name">Dim</div><div class="swatch-use">Body text, ghost button labels</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.1)"></div><div class="swatch-info"><div class="swatch-hex">rgba(255,255,255,.22)</div><div class="swatch-name">Faint</div><div class="swatch-use">Placeholders, disabled states</div></div></div>
+    </div>
+  </div>
+
+  <div class="color-group reveal" style="transition-delay:.25s">
+    <p class="color-group-title">Destructive</p>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#ff6b6b"></div><div class="swatch-info"><div class="swatch-hex">#FF6B6B</div><div class="swatch-name">Red</div><div class="swatch-use">Unpair button, error icons</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#ff8a8a"></div><div class="swatch-info"><div class="swatch-hex">#FF8A8A</div><div class="swatch-name">Red Light</div><div class="swatch-use">Warning copy, pair-blocked labels</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#2a0d0d"></div><div class="swatch-info"><div class="swatch-hex">#2A0D0D</div><div class="swatch-name">Red BG</div><div class="swatch-use">Error / blocked screen backgrounds</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3. TYPOGRAPHY ───────────────────────────────────── -->
+<section id="typography">
+  <div class="reveal">
+    <p class="section-eyebrow">05</p>
+    <h2 class="section-title">Typo<em>graphy</em></h2>
+    <p class="section-lead">Two typefaces — one emotional, one functional. Together they balance the intimate warmth of the brand with the clarity required for a usable UI.</p>
+  </div>
+
+  <div class="font-showcase reveal" style="transition-delay:.1s">
+    <div class="font-card">
+      <div class="font-card-name">Cormorant Garamond</div>
+      <div class="font-card-specimen" style="font-family:'Cormorant Garamond',serif;">My <em>Boo</em></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:rgba(255,255,255,.55);margin-bottom:14px;font-style:italic;">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
+      <div class="font-card-meta">Weights: 300, 400, 500 · Regular &amp; Italic<br>Use: App name, page headings, Boo ID, couple names — all display-scale emotional text</div>
+    </div>
+    <div class="font-card">
+      <div class="font-card-name">DM Sans</div>
+      <div class="font-card-specimen" style="font-family:'DM Sans',sans-serif;font-size:40px;">Just the two of you</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.55);margin-bottom:14px;letter-spacing:.5px;">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
+      <div class="font-card-meta">Weights: 300, 400, 500 · Optical size 9–40<br>Use: All body copy, form labels, inputs, buttons — all functional UI text</div>
+    </div>
+  </div>
+
+  <div class="type-scale reveal" style="transition-delay:.15s">
+    <p class="color-group-title" style="margin-bottom:8px;">Type Scale</p>
+    <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+      <div class="type-row" style="background:rgba(107,58,110,.12);">
+        <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--rose);">Role</span>
+        <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--rose);">Size</span>
+        <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--rose);">Weight</span>
+        <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--rose);">Specimen</span>
+      </div>
+      <div class="type-row"><span class="type-row-label">App Logo</span><span class="type-row-size">44px</span><span class="type-row-weight">300 Light</span><span class="type-row-specimen" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">My <em style="font-style:italic;color:#f5a8b8;">Boo</em></span></div>
+      <div class="type-row"><span class="type-row-label">Page Heading</span><span class="type-row-size">24px</span><span class="type-row-weight">300 Light</span><span class="type-row-specimen" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;">Create your <em style="font-style:italic;color:#f5a8b8;">account</em></span></div>
+      <div class="type-row"><span class="type-row-label">Boo ID</span><span class="type-row-size">33px</span><span class="type-row-weight">300 Light</span><span class="type-row-specimen" style="font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:4px;background:linear-gradient(135deg,#fff,#f5a8b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">A3K9P2X8Q</span></div>
+      <div class="type-row"><span class="type-row-label">Section Label</span><span class="type-row-size">11px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.28);">YOUR INFO</span></div>
+      <div class="type-row"><span class="type-row-label">Form Label</span><span class="type-row-size">11px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.22);">EMAIL ADDRESS</span></div>
+      <div class="type-row"><span class="type-row-label">Body / Sub-copy</span><span class="type-row-size">13px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:13px;color:rgba(255,255,255,.42);">Your private space starts here.</span></div>
+      <div class="type-row"><span class="type-row-label">Input Value</span><span class="type-row-size">14px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:13px;color:#fff;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c3cec7dae2c7cfc3cbce8cc1cdcf">[email&#160;protected]</a></span></div>
+      <div class="type-row"><span class="type-row-label">Button Label</span><span class="type-row-size">15px</span><span class="type-row-weight">500 Medium</span><span class="type-row-specimen" style="font-size:14px;font-weight:500;color:#fff;">Continue →</span></div>
+      <div class="type-row"><span class="type-row-label">Metadata</span><span class="type-row-size">11px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:11px;color:rgba(255,255,255,.22);">9-character alphanumeric · unique per account</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. APP STYLE ─────────────────────────────────────── -->
+<section id="style">
+  <div class="reveal">
+    <p class="section-eyebrow">06</p>
+    <h2 class="section-title">App <em>Style</em></h2>
+    <p class="section-lead">"Velvet Romance" — deeply personal, quietly luxurious, free of social-network energy. Opening the app should feel like opening a private journal, not launching a product.</p>
+  </div>
+
+  <div class="style-grid reveal" style="transition-delay:.1s">
+    <div class="style-card">
+      <div class="style-card-title">Background Treatment</div>
+      <p>All screens use layered dark purple-blacks (#130818 / #0D0511) with radial gradient meshes pushing lighter plum tones toward the center-top. Creates a natural visual focus without visible borders.</p>
+    </div>
+    <div class="style-card">
+      <div class="style-card-title">Glassmorphism Cards</div>
+      <p>Cards use rgba(255,255,255,0.05) — barely-there white overlays — with a 1px rgba(255,255,255,0.08) border. Surfaces feel lightweight and part of the background rather than floating objects.</p>
+    </div>
+    <div class="style-card">
+      <div class="style-card-title">Motion &amp; Floating Hearts</div>
+      <p>Floating heart decorations animate at four corners of the Sign-In screen using 6–9s ease-in-out vertical floats with slight rotation. Different speeds and phase offsets make them feel alive but never distracting.</p>
+    </div>
+    <div class="style-card">
+      <div class="style-card-title">Form Design</div>
+      <p>Inputs have a near-invisible dark fill that brightens subtly on focus with a rose-colored border. Gentle, confident — the input highlights just enough to confirm the user is in it.</p>
+    </div>
+    <div class="style-card">
+      <div class="style-card-title">Buttons</div>
+      <div class="btn-row">
+        <div class="btn-prev bp-primary">Continue →</div>
+        <div class="btn-prev bp-ghost">← Back</div>
+        <div class="btn-prev bp-danger">Unpair</div>
+      </div>
+      <p style="margin-top:10px;">Primary lifts on hover with expanded shadow. Danger deepens on hover. Ghost turns rose on hover.</p>
+    </div>
+    <div class="style-card">
+      <div class="style-card-title">Security Badges</div>
+      <div class="badge-prev">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Private by design — DB-level rules block all third-party access.
+      </div>
+      <p style="margin-top:8px;">Mint green badges appear on every screen involving data handling. Communicates privacy as a technical guarantee.</p>
+    </div>
+    <div class="style-card">
+      <div class="style-card-title">Step Indicators</div>
+      <div class="steps-prev">
+        <div class="sd sd-done"></div>
+        <div class="sd sd-on"></div>
+        <div class="sd sd-off"></div>
+        <div class="sd sd-off"></div>
+      </div>
+      <p style="margin-top:10px;">Active step is a pill-shaped rose bar. Completed steps are dim rose circles. Upcoming are faint white dots. No numbers — just visual progress.</p>
+    </div>
+    <div class="style-card">
+      <div class="style-card-title">Password Strength Rules</div>
+      <p>Live rule checklist: 8–16 chars, uppercase, lowercase, number, special char. Each rule has a small circle that fills mint-green when met. Continue button stays locked until all 5 pass.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5. SCREENS ──────────────────────────────────────── -->
+<section id="screens">
+  <div class="reveal screens-intro">
+    <p class="section-eyebrow">07</p>
+    <h2 class="section-title">Screen <em>Mockups</em></h2>
+    <p class="section-lead">All 9 screens from Phase 1.1 — Auth, Pairing, and Account. Each rendered at full fidelity in the app's exact color system.</p>
+  </div>
+
+  <div class="screens-grid">
+
+    <!-- Sign In -->
+    <div class="screen-entry reveal" style="transition-delay:.05s">
+      <span class="screen-label">Screen 1 — Sign In</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-aw" style="justify-content:center;gap:4px;">
+            <div style="position:absolute;top:10%;left:5%;font-size:38px;color:rgba(232,116,138,.08);animation:fl 8s ease-in-out infinite;">♥</div>
+            <div style="position:absolute;top:8%;right:8%;font-size:24px;color:rgba(232,116,138,.08);animation:fl 11s ease-in-out infinite 2s;">♥</div>
+            <div style="position:absolute;bottom:25%;left:8%;font-size:28px;color:rgba(232,116,138,.08);animation:fl 7s ease-in-out infinite 1s reverse;">♥</div>
+            <div style="position:absolute;bottom:20%;right:6%;font-size:20px;color:rgba(232,116,138,.08);animation:fl 9s ease-in-out infinite 3s;">♥</div>
+            <div class="m-logo-heart" style="position:relative;z-index:1;">♥</div>
+            <div class="m-logo-text" style="position:relative;z-index:1;">My <em style="font-style:italic;color:#f5a8b8;">Boo</em></div>
+            <div style="font-size:6px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px;position:relative;z-index:1;">just the two of you</div>
+            <div class="m-card" style="width:100%;position:relative;z-index:1;">
+              <button class="m-btn m-btn-g" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px;">
+                <span style="font-size:8px;">G</span> Continue with Google
+              </button>
+              <div class="m-div"><div class="m-div-line"></div>or email<div class="m-div-line"></div></div>
+              <button class="m-btn m-btn-p">Create Account</button>
+              <button class="m-btn m-btn-ghost">Already have an account · Sign in</button>
+            </div>
+            <div class="m-badge" style="position:relative;z-index:1;">🛡 Private by design — DB-level access control only.</div>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Entry point. Floating hearts, two auth paths, privacy badge.</p>
+    </div>
+
+    <!-- Register -->
+    <div class="screen-entry reveal" style="transition-delay:.1s">
+      <span class="screen-label">Screen 2 — Register</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-aw" style="justify-content:flex-start;padding-top:24px;">
+            <div class="m-steps"><div class="m-sd m-sd-on"></div><div class="m-sd m-sd-off"></div><div class="m-sd m-sd-off"></div><div class="m-sd m-sd-off"></div></div>
+            <div class="m-title">Create your <em>account</em></div>
+            <div class="m-sub">Your private space starts here.</div>
+            <input class="m-inp" placeholder="Your name" readonly/>
+            <input class="m-inp" placeholder="Email address" readonly/>
+            <select class="m-inp" style="appearance:none;"><option>United States (+1)</option></select>
+            <div class="m-inp-row">
+              <div class="m-dial">+1</div>
+              <input class="m-inp-noradius-l" placeholder="Phone number" readonly/>
+            </div>
+            <input class="m-inp" type="date" style="colorScheme:dark;" readonly/>
+            <button class="m-btn m-btn-p" style="margin-top:4px;">Continue →</button>
+            <button class="m-btn m-btn-ghost">← Back</button>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Step 1 of 4. Country sets dial code automatically. No password field.</p>
+    </div>
+
+    <!-- Password -->
+    <div class="screen-entry reveal" style="transition-delay:.15s">
+      <span class="screen-label">Screen 3 — Password</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-aw" style="justify-content:flex-start;padding-top:24px;">
+            <div class="m-steps"><div class="m-sd m-sd-done"></div><div class="m-sd m-sd-on"></div><div class="m-sd m-sd-off"></div><div class="m-sd m-sd-off"></div></div>
+            <div class="m-title">Set your <em>password</em></div>
+            <div class="m-sub">Choose something only you would know.</div>
+            <div style="position:relative;width:100%;margin-bottom:2px;">
+              <input class="m-inp" style="margin-bottom:0;padding-right:20px;" placeholder="••••••••" readonly/>
+              <span style="position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:9px;color:rgba(255,255,255,.3);">👁</span>
+            </div>
+            <div style="text-align:right;font-size:6px;color:rgba(255,255,255,.25);margin-bottom:5px;width:100%;">0 / 16</div>
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:7px;padding:7px 9px;margin-bottom:5px;width:100%;">
+              <div class="m-rule-row"><div class="m-rule-dot m-rule-on">✓</div><span style="color:rgba(94,245,160,.8);">8–16 characters</span></div>
+              <div class="m-rule-row"><div class="m-rule-dot m-rule-off"></div><span style="color:rgba(255,255,255,.28);">One uppercase (A–Z)</span></div>
+              <div class="m-rule-row"><div class="m-rule-dot m-rule-off"></div><span style="color:rgba(255,255,255,.28);">One lowercase (a–z)</span></div>
+              <div class="m-rule-row"><div class="m-rule-dot m-rule-off"></div><span style="color:rgba(255,255,255,.28);">One number (0–9)</span></div>
+              <div class="m-rule-row"><div class="m-rule-dot m-rule-off"></div><span style="color:rgba(255,255,255,.28);">One special character</span></div>
+            </div>
+            <input class="m-inp" placeholder="Confirm password" readonly/>
+            <button class="m-btn m-btn-p" style="opacity:.45;margin-top:2px;">Continue →</button>
+            <button class="m-btn m-btn-ghost">← Back</button>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Step 2 of 4. Live strength rules. Continue locked until all 5 pass.</p>
+    </div>
+
+    <!-- Avatar -->
+    <div class="screen-entry reveal" style="transition-delay:.2s">
+      <span class="screen-label">Screen 4 — Avatar Upload</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-aw" style="justify-content:flex-start;padding-top:24px;">
+            <div class="m-steps"><div class="m-sd m-sd-done"></div><div class="m-sd m-sd-done"></div><div class="m-sd m-sd-on"></div><div class="m-sd m-sd-off"></div></div>
+            <div class="m-title">Add a <em>photo</em></div>
+            <div class="m-sub">Optional — you can skip and add later.</div>
+            <div class="m-av-zone">📷</div>
+            <div class="m-card" style="margin-top:2px;">
+              🛡 Stored in Firebase Storage · URL → <span style="font-family:'DM Mono',monospace;font-size:6px;">users.avatar_url</span>
+            </div>
+            <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
+              <button class="m-btn" style="flex:1;background:transparent;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.3);padding:6px;">Skip</button>
+              <button class="m-btn m-btn-p" style="flex:2;">Continue →</button>
+            </div>
+            <button class="m-btn m-btn-ghost">← Back</button>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Step 3 of 4. Optional photo. Stored in Firebase/Supabase Storage.</p>
+    </div>
+
+    <!-- Pairing -->
+    <div class="screen-entry reveal" style="transition-delay:.25s">
+      <span class="screen-label">Screen 5 — Pairing</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-aw" style="justify-content:flex-start;padding-top:24px;">
+            <div class="m-steps"><div class="m-sd m-sd-done"></div><div class="m-sd m-sd-done"></div><div class="m-sd m-sd-done"></div><div class="m-sd m-sd-on"></div></div>
+            <div class="m-title">Find your <em>boo</em></div>
+            <div class="m-sub">Share your Boo ID or enter theirs.</div>
+            <div class="m-boo-box">
+              <div style="font-size:6px;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;">Your Boo ID</div>
+              <div class="m-boo-id">A3K9P2X8Q</div>
+              <button style="margin-top:7px;padding:3px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.3);font-size:6px;font-family:'DM Sans',sans-serif;cursor:default;">Copy ID</button>
+            </div>
+            <div class="m-div"><div class="m-div-line"></div>partner's Boo ID<div class="m-div-line"></div></div>
+            <div style="display:flex;gap:4px;width:100%;margin-bottom:5px;">
+              <input class="m-inp" style="flex:1;margin:0;text-align:center;letter-spacing:2px;font-family:'Cormorant Garamond',serif;font-size:10px;" placeholder="B7X2MN4KQ" readonly/>
+              <button class="m-btn m-btn-p" style="flex:0 0 auto;width:auto;padding:0 8px;font-size:7px;">💕</button>
+            </div>
+            <div class="m-badge">🛡 Already-paired accounts blocked at DB rule level.</div>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Step 4 of 4. Your Boo ID display + partner ID entry.</p>
+    </div>
+
+    <!-- Pair Success -->
+    <div class="screen-entry reveal" style="transition-delay:.3s">
+      <span class="screen-label">Screen 6 — Pair Success</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-success-bg">
+            <div style="font-size:14px;letter-spacing:4px;">🎉✨💕✨🎉</div>
+            <div class="m-duo">
+              <div class="m-av m-av-you">A</div>
+              <div style="margin:0 -3px;z-index:1;color:#e8748a;font-size:12px;filter:drop-shadow(0 0 6px rgba(232,116,138,.5));">♥</div>
+              <div class="m-av m-av-them">J</div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300;color:#fff;text-align:center;">Alex <em style="font-style:italic;color:#f5a8b8;">&amp;</em> Jordan</div>
+            <div style="font-size:7px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:2px;">Your couple space has been created 💜</div>
+            <div class="m-cpl-badge">
+              <div style="font-size:6px;color:rgba(255,255,255,.25);letter-spacing:1.5px;text-transform:uppercase;">couples table record</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;">CPL · A3K9 · B7X2</div>
+            </div>
+            <div class="m-card" style="width:100%;">🛡 Both accounts marked paired. Further pairings are blocked.</div>
+            <button class="m-btn m-btn-p" style="width:100%;">← Back to start</button>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Celebration screen. Both avatars linked. Couple record created.</p>
+    </div>
+
+    <!-- Pair Blocked -->
+    <div class="screen-entry reveal" style="transition-delay:.35s">
+      <span class="screen-label">Screen 7 — Pair Blocked</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-blocked-bg">
+            <div class="m-blocked-ico">⚠</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:300;color:#fff;text-align:center;">Account already paired</div>
+            <div class="m-pill m-pill-red">⚠ Pairing blocked</div>
+            <div style="font-size:7px;color:rgba(255,255,255,.4);text-align:center;line-height:1.6;padding:0 4px;">The Boo ID you entered belongs to an account that's already in a couple space.</div>
+            <div class="m-card" style="width:100%;">🛡 Enforced at the <strong style="color:#fff;">database rule level</strong> — not just in the UI.</div>
+            <button class="m-btn" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.35);">← Try a different Boo ID</button>
+            <button class="m-btn m-btn-ghost" style="width:100%;">Back to sign in</button>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Error state for already-paired accounts. DB enforcement explained.</p>
+    </div>
+
+    <!-- Unpair -->
+    <div class="screen-entry reveal" style="transition-delay:.4s">
+      <span class="screen-label">Screen 8 — Unpair</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-unpair-bg">
+            <div class="m-un-ico">🔗</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:300;color:#fff;text-align:center;">Unpair from Jordan?</div>
+            <div class="m-card" style="width:100%;">
+              Either partner can unpair at any time. This removes both users from the couple space.
+              <div class="m-warn">⚠ Chat history, gallery photos and game data will be cleared. Cannot be undone.</div>
+            </div>
+            <button class="m-btn m-btn-danger" style="width:100%;">Continue →</button>
+            <button class="m-btn m-btn-ghost" style="width:100%;">Cancel — keep us together 💕</button>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">2-step destructive flow. Data consequences explained up front.</p>
+    </div>
+
+    <!-- Profile Settings -->
+    <div class="screen-entry reveal" style="transition-delay:.45s">
+      <span class="screen-label">Screen 9 — Profile Settings</span>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-profile-bg">
+            <div class="m-back-row">
+              <button class="m-back-btn">←</button>
+              <div class="m-title" style="font-size:11px;">Profile Settings</div>
+            </div>
+            <div class="m-av-ring">A</div>
+            <div style="text-align:center;font-size:6px;color:rgba(94,245,160,.6);margin-bottom:6px;">✓ Synced to partner's view</div>
+            <div class="m-sec-lbl">Your Info</div>
+            <input class="m-inp" value="Alex" readonly/>
+            <input class="m-inp" value="alex@email.com" readonly/>
+            <input class="m-inp" value="+1 555 000 0000" readonly/>
+            <div style="display:flex;gap:4px;margin-bottom:4px;">
+              <select class="m-inp" style="flex:1;margin:0;appearance:none;"><option>United States</option></select>
+              <input class="m-inp" type="date" style="flex:1;margin:0;colorScheme:dark;" readonly/>
+            </div>
+            <div class="m-sec-lbl" style="margin-top:4px;">Boo ID</div>
+            <div class="m-boo-box" style="padding:7px;">
+              <div class="m-boo-id" style="font-size:9px;letter-spacing:2px;">A3K9P2X8Q</div>
+              <div style="font-size:5.5px;color:rgba(255,255,255,.2);margin-top:3px;">Cannot be changed</div>
+            </div>
+            <button class="m-btn m-btn-p">Save Changes</button>
+          </div>
+        </div>
+      </div>
+      <p class="screen-desc">Edit profile, re-upload avatar, view read-only Boo ID.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 6. COMPONENTS ───────────────────────────────────── -->
+<section id="components">
+  <div class="reveal">
+    <p class="section-eyebrow">08</p>
+    <h2 class="section-title">Component <em>Library</em></h2>
+    <p class="section-lead">All shared primitives live in <code style="font-family:'DM Mono',monospace;font-size:14px;color:var(--rose-lt);">src/icons/index.jsx</code> and are imported individually by each screen.</p>
+  </div>
+
+  <div class="comp-grid reveal" style="transition-delay:.1s">
+    <div>
+      <p class="color-group-title" style="margin-bottom:10px;">Icons (src/icons/index.jsx)</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:1.2fr 1fr 1.5fr;">
+          <span>Export</span><span>Props</span><span>Used In</span>
+        </div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">HeartIcon</span><span class="gold">size, filled</span><span class="dim">SignIn, PairSuccess</span></div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">ShieldIcon</span><span class="gold">size</span><span class="dim">SignIn, Avatar, PairSuccess, Blocked, Unpair</span></div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">UnlinkIcon</span><span class="gold">size</span><span class="dim">Unpair</span></div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">CamIcon</span><span class="gold">size</span><span class="dim">AvatarUpload, Profile</span></div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">CheckIcon</span><span class="gold">size</span><span class="dim">AvatarUpload, Profile, Password</span></div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">AlertIcon</span><span class="gold">size</span><span class="dim">PairBlocked, Unpair</span></div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">BackIcon</span><span class="gold">size</span><span class="dim">ProfileSettings</span></div>
+        <div class="comp-row" style="grid-template-columns:1.2fr 1fr 1.5fr;"><span class="mono">GoogleIcon</span><span class="gold">size</span><span class="dim">SignIn</span></div>
+      </div>
+    </div>
+    <div>
+      <p class="color-group-title" style="margin-bottom:10px;">CSS Classes (globals.css)</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:1fr 2fr;">
+          <span>Class</span><span>Purpose</span>
+        </div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.screen</span><span class="dim">Absolute inset flex column base</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.aw</span><span class="dim">Auth wrapper — scrollable, padded, gradient bg</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.btn-p</span><span class="dim">Primary rose gradient CTA</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.btn-ghost</span><span class="dim">Transparent text-only secondary</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.btn-danger</span><span class="dim">Red-tint destructive action</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.card</span><span class="dim">Glassmorphism surface — 5% white fill</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.boo-box</span><span class="dim">Boo ID display — plum gradient, serif type</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.sec-badge</span><span class="dim">Mint green privacy notice block</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.pill-g / .pill-red</span><span class="dim">Status pills — success / error</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.av-zone</span><span class="dim">Dashed circle avatar upload target</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 2fr;"><span class="mono">.av-ring</span><span class="dim">Solid circle avatar + hover overlay</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 7. STRUCTURE ─────────────────────────────────────── -->
+<section id="structure">
+  <div class="reveal">
+    <p class="section-eyebrow">09</p>
+    <h2 class="section-title">File <em>Structure</em></h2>
+    <p class="section-lead">All source files organized by concern. Screens are split into subfolders by category — login, home, features, settings — each importing from shared constants and icons two levels up.</p>
+  </div>
+
+  <div class="filetree reveal" style="transition-delay:.1s;">
+<div class="ft-line"><span class="ft-dir">src/</span></div>
+<div class="ft-line"><span class="ft-dir">├── App.jsx</span><span class="ft-note">                    Root router + shell + shared state + global CSS</span></div>
+<div class="ft-line"><span class="ft-dir">├── index.css</span><span class="ft-note">                  html / body / #root height reset</span></div>
+<div class="ft-line"><span class="ft-dir">│</span></div>
+<div class="ft-line"><span class="ft-dir">├── constants/</span></div>
+<div class="ft-line"><span class="ft-file">│   ├── screens.js</span><span class="ft-note">             SCREENS enum — all route keys</span></div>
+<div class="ft-line"><span class="ft-file">│   └── data.js</span><span class="ft-note">                COUNTRIES list (with dial codes), BOO_ID placeholder</span></div>
+<div class="ft-line"><span class="ft-dir">│</span></div>
+<div class="ft-line"><span class="ft-dir">├── icons/</span></div>
+<div class="ft-line"><span class="ft-file">│   └── index.jsx</span><span class="ft-note">              All shared SVG icon components</span></div>
+<div class="ft-line"><span class="ft-dir">│</span></div>
+<div class="ft-line"><span class="ft-dir">├── styles/</span></div>
+<div class="ft-line"><span class="ft-file">│   └── globals.css</span><span class="ft-note">            Design tokens + shared utility classes</span></div>
+<div class="ft-line"><span class="ft-dir">│</span></div>
+<div class="ft-line"><span class="ft-dir">└── screens/</span></div>
+<div class="ft-line"><span class="ft-dir">    ├── login/</span><span class="ft-note">                  Auth &amp; pairing flow</span></div>
+<div class="ft-line"><span class="ft-file">    │   ├── SignInScreen.jsx</span><span class="ft-note">    Method selection — Google + email</span></div>
+<div class="ft-line"><span class="ft-file">    │   ├── RegisterScreen.jsx</span><span class="ft-note">  Personal details — name, email, country+dial, phone, dob</span></div>
+<div class="ft-line"><span class="ft-file">    │   ├── PasswordScreen.jsx</span><span class="ft-note">  Password + confirm with live strength rules</span></div>
+<div class="ft-line"><span class="ft-file">    │   ├── PairingScreen.jsx</span><span class="ft-note">   Boo ID share + partner ID entry</span></div>
+<div class="ft-line"><span class="ft-file">    │   ├── PairSuccessScreen.jsx</span><span class="ft-note">Couple space created celebration</span></div>
+<div class="ft-line"><span class="ft-file">    │   ├── PairBlockedScreen.jsx</span><span class="ft-note">Already-paired error state</span></div>
+<div class="ft-line"><span class="ft-file">    │   └── PinSetupScreen.jsx</span><span class="ft-note">  4-digit PIN setup during onboarding</span></div>
+<div class="ft-line"><span class="ft-dir">    │</span></div>
+<div class="ft-line"><span class="ft-dir">    ├── home/</span><span class="ft-note">                   Post-login home shell</span></div>
+<div class="ft-line"><span class="ft-file">    │   └── HomeScreen.jsx</span><span class="ft-note">      Milestone counter + quick-access grid + LDR chips</span></div>
+<div class="ft-line"><span class="ft-dir">    │</span></div>
+<div class="ft-line"><span class="ft-dir">    ├── features/</span><span class="ft-note">               Core app features</span></div>
+<div class="ft-line"><span class="ft-file">    │   └── ChatScreen.jsx</span><span class="ft-note">      Full-screen private chat — messages, reactions, reply, attach</span></div>
+<div class="ft-line"><span class="ft-dir">    │</span></div>
+<div class="ft-line"><span class="ft-dir">    └── settings/</span><span class="ft-note">               Profile &amp; account management</span></div>
+<div class="ft-line"><span class="ft-file">        ├── AvatarUploadScreen.jsx</span><span class="ft-note">  Optional photo upload step</span></div>
+<div class="ft-line"><span class="ft-file">        ├── ProfileSettingsScreen.jsx</span><span class="ft-note">Edit profile + re-upload avatar</span></div>
+<div class="ft-line"><span class="ft-file">        ├── MainProfileScreen.jsx</span><span class="ft-note">   Profile hub — info, settings, security, danger zone entry</span></div>
+<div class="ft-line"><span class="ft-file">        ├── DangerZoneScreen.jsx</span><span class="ft-note">    PIN-gated unpair &amp; delete everything</span></div>
+<div class="ft-line"><span class="ft-file">        └── UnpairScreen.jsx</span><span class="ft-note">        2-step unpair confirmation</span></div>
+  </div>
+
+  <div class="flow-diagram reveal" style="transition-delay:.15s;">
+    <p class="color-group-title" style="margin-bottom:4px;">Navigation Flow</p>
+
+    <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:10px;">Onboarding</p>
+    <div class="flow-row">
+      <span class="flow-node active">Sign In</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Register</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Password</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Avatar</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Pairing</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node success">Pair Success</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">PIN Setup</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Home</span>
+    </div>
+
+    <div class="flow-row" style="margin-top:8px;">
+      <span class="flow-node">Pairing</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node danger">Pair Blocked</span>
+      <span class="flow-note">target already paired</span>
+    </div>
+
+    <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin:16px 0 10px;">Home Shell (tab bar)</p>
+    <div class="flow-row">
+      <span class="flow-node active">Home</span>
+      <span class="flow-arrow">↔</span>
+      <span class="flow-node active">✦ FAB</span>
+      <span class="flow-arrow">↔</span>
+      <span class="flow-node active">Profile</span>
+    </div>
+    <div class="flow-row" style="margin-top:6px;">
+      <span class="flow-node">✦ FAB → Message</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Chat</span>
+      <span class="flow-note">full-screen, hides nav bar</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-node">✦ FAB → Quick Drawer</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node">Chat · Gallery · Games · Calls · Watch · Mood</span>
+    </div>
+
+    <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin:16px 0 10px;">Profile &amp; Settings</p>
+    <div class="flow-row">
+      <span class="flow-node">Profile tab</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Main Profile</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node">Profile Settings</span>
+      <span class="flow-note">edit name, avatar, details</span>
+    </div>
+    <div class="flow-row" style="margin-top:6px;">
+      <span class="flow-node">Main Profile → Security</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node">PIN Setup</span>
+      <span class="flow-note">change PIN</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-node">Main Profile → Danger Zone</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node">PIN Gate</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Danger Zone</span>
+    </div>
+
+    <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin:16px 0 10px;">Danger Zone</p>
+    <div class="flow-row">
+      <span class="flow-node danger">Danger Zone → Unpair</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Pairing</span>
+      <span class="flow-note">couple dissolved, re-pair flow</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-node danger">Danger Zone → Delete</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node active">Sign In</span>
+      <span class="flow-note">type DELETE to confirm</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">My <em>Boo</em></div>
+  <div class="footer-meta">Design Document v1.1 · Phase 1.1 · 2026</div>
+</footer>
+
+
+<script>
+// ── Hamburger nav ─────────────────────────────────────────
+const hamburger = document.getElementById('hamburger');
+const drawer    = document.getElementById('drawer');
+
+function closeDrawer() {
+  hamburger.classList.remove('open');
+  drawer.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+hamburger.addEventListener('click', () => {
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) { closeDrawer(); }
+  else {
+    hamburger.classList.add('open');
+    drawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+});
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900) closeDrawer();
+});
+
+// ── Scroll reveal ─────────────────────────────────────────
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── Swatch hex copy ───────────────────────────────────────
+document.querySelectorAll('.swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    const hex = sw.querySelector('.swatch-hex')?.textContent;
+    if(hex) {
+      navigator.clipboard?.writeText(hex).catch(()=>{});
+      const orig = sw.querySelector('.swatch-name')?.textContent;
+      const nameEl = sw.querySelector('.swatch-name');
+      if(nameEl){ nameEl.textContent='Copied!'; setTimeout(()=>{ nameEl.textContent=orig; },1200); }
+    }
+  });
+  sw.style.cursor = 'pointer';
+  sw.title = 'Tap to copy hex';
+});
+</script>
+</body>
+</html>
