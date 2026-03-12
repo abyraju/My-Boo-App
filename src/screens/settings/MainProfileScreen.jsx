@@ -321,41 +321,59 @@ export default function MainProfileScreen({ navigate }) {
 
           {/* ── Boo ID ── */}
           <SectionLabel text="Boo ID"/>
-          <Card>
-            {/* Tapping reveals a PIN gate; once confirmed the ID is shown */}
+          {/* Note: outer div has no overflow:hidden so blur() isn't clipped */}
+          <div style={{
+            margin:"0 16px 16px",
+            background:"rgba(255,255,255,.04)", border:"1px solid rgba(255,255,255,.08)",
+            borderRadius:18,
+          }}>
             <div
-              className="pr-info-row tappable"
               onClick={() => {
                 if (!booIdVisible) setBooIdGate(true);
-                else setBooIdVisible(false); // tap again to re-hide
+                else setBooIdVisible(false);
+              }}
+              style={{
+                display:"flex", alignItems:"center", gap:12,
+                padding:"13px 16px", cursor:"pointer",
               }}
             >
-              <div className="pr-info-ico">🆔</div>
-              <div className="pr-info-label">
-                <div className="pr-info-lbl-top">Permanent · Cannot be changed</div>
-                <div
-                  className="pr-info-lbl-val mono"
-                  style={{
-                    filter: booIdVisible ? "none" : "blur(5px)",
-                    userSelect: booIdVisible ? "text" : "none",
-                    transition: "filter .22s",
-                    letterSpacing: "4px",
-                    fontSize: 16,
-                  }}
-                >
+              {/* Icon */}
+              <div style={{
+                width:32, height:32, borderRadius:10, flexShrink:0,
+                background:"rgba(255,255,255,.06)",
+                display:"flex", alignItems:"center", justifyContent:"center", fontSize:15,
+              }}>🆔</div>
+
+              {/* Label + value */}
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:10, marginBottom:4, letterSpacing:1, textTransform:"uppercase", color:"rgba(255,255,255,.3)" }}>
+                  Permanent · Cannot be changed
+                </div>
+                <div style={{
+                  fontFamily:"'Cormorant Garamond',serif",
+                  fontSize:22, letterSpacing:6, fontWeight:300,
+                  color:"rgba(255,255,255,.9)",
+                  filter: booIdVisible ? "none" : "blur(6px)",
+                  transition:"filter .28s ease",
+                  userSelect: booIdVisible ? "text" : "none",
+                  lineHeight:1,
+                }}>
                   A3K9BX
                 </div>
               </div>
+
+              {/* Lock/unlock indicator */}
               <div style={{
-                fontSize: 11,
-                color: booIdVisible ? "rgba(94,245,160,.5)" : "rgba(255,255,255,.2)",
-                flexShrink: 0,
-                transition: "color .2s",
+                width:30, height:30, borderRadius:9, flexShrink:0,
+                background: booIdVisible ? "rgba(94,245,160,.1)" : "rgba(255,255,255,.05)",
+                border: `1px solid ${booIdVisible ? "rgba(94,245,160,.2)" : "rgba(255,255,255,.08)"}`,
+                display:"flex", alignItems:"center", justifyContent:"center",
+                fontSize:14, transition:"all .2s",
               }}>
                 {booIdVisible ? "🔓" : "🔒"}
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* ── App Settings ── */}
           <SectionLabel text="App Settings"/>

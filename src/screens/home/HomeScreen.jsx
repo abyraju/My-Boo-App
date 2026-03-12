@@ -263,16 +263,10 @@ export default function HomeScreen({ onDrawer }) {
         <div className="home-header">
           <div className="hdr-left">
             <span className="hdr-greeting">Good morning, Alex 🌸</span>
-            <div className="hdr-online">
-              <div className="hdr-online-dot" />
-              <span className="hdr-online-text">
-                <strong>Jordan</strong> is online now
-              </span>
-            </div>
           </div>
           <div className="hdr-avatars">
-            <div className="hdr-av hdr-av-you">A<div className="hdr-av-dot" /></div>
-            <div className="hdr-av hdr-av-them">J<div className="hdr-av-dot" /></div>
+            <div className="hdr-av hdr-av-you">A</div>
+            <div className="hdr-av hdr-av-them">J</div>
           </div>
         </div>
 

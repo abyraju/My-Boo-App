@@ -29,17 +29,18 @@ export default function PairSuccessScreen({ navigate, yourAvatar }) {
         <div style={{ display: "flex", gap: 8, fontSize: 22 }}>🎉 ✨ 💕 ✨ 🎉</div>
 
         {/* Linked avatars */}
-        <div className="av-duo">
-          <div className="av-you">
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:70, height:70, borderRadius:"50%", border:"3px solid var(--velvet)", background:"linear-gradient(135deg,#e8748a,#9b3a6e)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, color:"#fff", overflow:"hidden", flexShrink:0, zIndex:1 }}>
             {yourAvatar
-              ? <img src={yourAvatar} alt="you" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ? <img src={yourAvatar} alt="you" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
               : "A"
             }
           </div>
-          <div className="av-heart">
-            <HeartIcon size={26} filled />
+          {/* Heart ring overlaps both avatars equally */}
+          <div style={{ width:34, height:34, borderRadius:"50%", background:"var(--deep)", border:"2px solid rgba(232,116,138,.3)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:3, flexShrink:0, margin:"0 -10px", color:"var(--rose)", filter:"drop-shadow(0 0 6px rgba(232,116,138,.6))" }}>
+            <HeartIcon size={15} filled />
           </div>
-          <div className="av-them">J</div>
+          <div style={{ width:70, height:70, borderRadius:"50%", border:"3px solid var(--velvet)", background:"linear-gradient(135deg,#7eb8f5,#3a6eb4)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, color:"#fff", flexShrink:0, zIndex:1 }}>J</div>
         </div>
 
         {/* Couple name */}

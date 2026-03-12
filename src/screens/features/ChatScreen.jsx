@@ -67,72 +67,117 @@ function TypingDots() {
 }
 
 // ── Message bubble ────────────────────────────────────────────────────────────
-function Bubble({ msg, onReact }) {
+function Bubble({ msg, onReact, onReply, onPin, onDelete, isLastSeen }) {
   const isYou = msg.from === "you";
-  const [showReact, setShowReact] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const timerRef = useRef(null);
 
   const REACTIONS = ["❤️","😂","😮","😢","🔥","💕"];
 
-  const handlePressStart = () => { timerRef.current = setTimeout(() => setShowReact(true), 420); };
+  const handlePressStart = () => { timerRef.current = setTimeout(() => setShowMenu(true), 400); };
   const handlePressEnd   = () => { clearTimeout(timerRef.current); };
 
-  return (
-    <div
-      className="bubble-wrap"
-      style={{ display:"flex", flexDirection:"column", alignItems: isYou ? "flex-end" : "flex-start", "--swipe-dir": isYou ? "3px" : "-3px", position:"relative" }}
-      onPointerDown={handlePressStart}
-      onPointerUp={handlePressEnd}
-      onPointerLeave={handlePressEnd}
-    >
-      {showReact && (
-        <div className="react-bar" style={{ [isYou ? "right" : "left"]: 0 }}>
-          {REACTIONS.map(r => (
-            <span key={r} className="react-btn" onClick={() => { onReact(msg.id, r); setShowReact(false); }}>{r}</span>
-          ))}
-          <span className="react-btn" onClick={() => setShowReact(false)} style={{ fontSize:14, color:"rgba(255,255,255,.4)", paddingLeft:4 }}>✕</span>
-        </div>
-      )}
+  function close() { setShowMenu(false); }
 
-      {/* Reply quote */}
-      {msg.replyTo && (
-        <div style={{
-          maxWidth:"72%", marginBottom:4, padding:"6px 10px",
-          background:"rgba(255,255,255,.05)", borderRadius:10,
-          borderLeft:"2px solid rgba(232,116,138,.5)",
-          fontSize:11, color:"rgba(255,255,255,.45)", lineHeight:1.4,
-        }}>
-          {msg.replyTo}
-        </div>
+  return (
+    <div style={{ position:"relative" }}>
+      {/* Context menu overlay */}
+      {showMenu && (
+        <>
+          {/* Backdrop */}
+          <div onClick={close} style={{ position:"fixed", inset:0, zIndex:20 }}/>
+          {/* Menu */}
+          <div className="pop-in" style={{
+            position:"absolute", zIndex:21,
+            [isYou ? "right" : "left"]: 0,
+            bottom:"calc(100% + 8px)",
+            background:"rgba(20,6,28,.96)", border:"1px solid rgba(255,255,255,.1)",
+            borderRadius:18, backdropFilter:"blur(14px)",
+            minWidth:200, overflow:"hidden",
+            boxShadow:"0 8px 32px rgba(0,0,0,.6)",
+          }}>
+            {/* Reactions row */}
+            <div style={{ display:"flex", gap:4, padding:"10px 12px 8px", borderBottom:"1px solid rgba(255,255,255,.07)" }}>
+              {REACTIONS.map(r => (
+                <span key={r} className="react-btn" onClick={() => { onReact(msg.id, r); close(); }}>{r}</span>
+              ))}
+            </div>
+            {/* Actions */}
+            {[
+              { ico:"↩️", label:"Reply",  action:() => { onReply(msg.text); close(); } },
+              { ico:"📌", label: msg.pinned ? "Unpin" : "Pin", action:() => { onPin(msg.id); close(); } },
+              { ico:"🗑️", label:"Delete", action:() => { onDelete(msg.id); close(); }, danger:true },
+            ].map(({ ico, label, action, danger }) => (
+              <div key={label} onClick={action} style={{
+                display:"flex", alignItems:"center", gap:10,
+                padding:"11px 16px",
+                cursor:"pointer",
+                color: danger ? "#ff8a8a" : "rgba(255,255,255,.82)",
+                fontSize:13, fontFamily:"'DM Sans',sans-serif",
+                transition:"background .12s",
+              }}
+              onPointerEnter={e => e.currentTarget.style.background="rgba(255,255,255,.05)"}
+              onPointerLeave={e => e.currentTarget.style.background="transparent"}
+              >
+                <span style={{ fontSize:16 }}>{ico}</span>
+                {label}
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <div
-        className="msg-bubble"
-        style={{
-          maxWidth:"75%", padding:"10px 14px", lineHeight:1.55,
-          fontSize:14, fontFamily:"'DM Sans',sans-serif",
-          borderRadius: isYou ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-          background: isYou
-            ? "linear-gradient(135deg, #e8748a, #c45578)"
-            : "rgba(107,58,110,.28)",
-          border: isYou ? "none" : "1px solid rgba(232,116,138,.14)",
-          color:"#fff",
-          boxShadow: isYou ? "0 4px 18px rgba(232,116,138,.25)" : "none",
-          wordBreak:"break-word",
-        }}
+        className="bubble-wrap"
+        style={{ display:"flex", flexDirection:"column", alignItems: isYou ? "flex-end" : "flex-start", "--swipe-dir": isYou ? "3px" : "-3px", position:"relative" }}
+        onPointerDown={handlePressStart}
+        onPointerUp={handlePressEnd}
+        onPointerLeave={handlePressEnd}
       >
-        {msg.text}
-      </div>
+        {/* Reply quote */}
+        {msg.replyTo && (
+          <div style={{
+            maxWidth:"72%", marginBottom:4, padding:"6px 10px",
+            background:"rgba(255,255,255,.05)", borderRadius:10,
+            borderLeft:"2px solid rgba(232,116,138,.5)",
+            fontSize:11, color:"rgba(255,255,255,.45)", lineHeight:1.4,
+          }}>
+            {msg.replyTo}
+          </div>
+        )}
 
-      {/* Reaction badge */}
-      {msg.reaction && (
-        <div style={{ fontSize:16, marginTop:3, animation:"popIn .18s ease" }}>{msg.reaction}</div>
-      )}
+        <div
+          className="msg-bubble"
+          style={{
+            maxWidth:"75%", padding:"10px 14px", lineHeight:1.55,
+            fontSize:14, fontFamily:"'DM Sans',sans-serif",
+            borderRadius: isYou ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+            background: isYou
+              ? "linear-gradient(135deg, #e8748a, #c45578)"
+              : "rgba(107,58,110,.28)",
+            border: isYou ? "none" : "1px solid rgba(232,116,138,.14)",
+            color:"#fff",
+            boxShadow: isYou ? "0 4px 18px rgba(232,116,138,.25)" : "none",
+            wordBreak:"break-word",
+            outline: msg.pinned ? "1px solid rgba(201,169,110,.35)" : "none",
+          }}
+        >
+          {msg.pinned && <div style={{ fontSize:9, color:"rgba(201,169,110,.7)", letterSpacing:"1.5px", textTransform:"uppercase", marginBottom:4 }}>📌 pinned</div>}
+          {msg.text}
+        </div>
 
-      {/* Time + read */}
-      <div style={{ display:"flex", gap:4, alignItems:"center", marginTop:3 }}>
-        <span style={{ fontSize:10, color:"rgba(255,255,255,.28)" }}>{msg.time}</span>
-        {isYou && <span style={{ fontSize:10, color: msg.read ? "rgba(232,116,138,.7)" : "rgba(255,255,255,.25)" }}>✓✓</span>}
+        {/* Reaction badge */}
+        {msg.reaction && (
+          <div style={{ fontSize:16, marginTop:3, animation:"popIn .18s ease" }}>{msg.reaction}</div>
+        )}
+
+        {/* Timestamp row — no ticks; only "Seen" on last read outgoing message */}
+        <div style={{ display:"flex", gap:4, alignItems:"center", marginTop:3 }}>
+          <span style={{ fontSize:10, color:"rgba(255,255,255,.28)" }}>{msg.time}</span>
+          {isLastSeen && (
+            <span style={{ fontSize:10, color:"rgba(232,116,138,.6)", fontStyle:"italic" }}>Seen</span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -334,6 +379,17 @@ export default function ChatScreen({ onBack }) {
     setMessages(m => m.map(msg => msg.id === id ? { ...msg, reaction: emoji } : msg));
   }
 
+  function pinMessage(id) {
+    setMessages(m => m.map(msg => msg.id === id ? { ...msg, pinned: !msg.pinned } : msg));
+  }
+
+  function deleteMessage(id) {
+    setMessages(m => m.filter(msg => msg.id !== id));
+  }
+
+  // Last outgoing read message — shows "Seen" beneath it
+  const lastSeenId = [...messages].reverse().find(m => m.from === "you" && m.read)?.id;
+
   function cycleEmoji() {
     setEmojiIdx(i => (i + 1) % EMOJI_CYCLE.length);
   }
@@ -355,7 +411,7 @@ export default function ChatScreen({ onBack }) {
         position:"relative", zIndex:10,
         background:"rgba(9,3,14,.9)", backdropFilter:"blur(24px)",
         borderBottom:"1px solid rgba(255,255,255,.07)",
-        padding:"52px 16px 12px",
+        padding:"14px 16px 12px",
         display:"flex", alignItems:"center", gap:12,
       }}>
         <div onClick={onBack} style={{
@@ -367,14 +423,8 @@ export default function ChatScreen({ onBack }) {
 
         <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center" }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-            <div style={{ position:"relative" }}>
-              <div style={{ width:32, height:32, borderRadius:"50%", background:"linear-gradient(135deg,#7eb8f5,#3a6eb4)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:600, color:"#fff" }}>J</div>
-              <div style={{ position:"absolute", bottom:0, right:0, width:9, height:9, borderRadius:"50%", background:"#5ef5a0", border:"1.5px solid #0d0511" }}/>
-            </div>
-            <div>
-              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:400, color:"#fff", lineHeight:1 }}>Jordan</div>
-              <div style={{ fontSize:10, color:"rgba(94,245,160,.7)", marginTop:2 }}>online now</div>
-            </div>
+            <div style={{ width:32, height:32, borderRadius:"50%", background:"linear-gradient(135deg,#7eb8f5,#3a6eb4)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:600, color:"#fff" }}>J</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:400, color:"#fff", lineHeight:1 }}>Jordan</div>
           </div>
         </div>
 
@@ -414,7 +464,14 @@ export default function ChatScreen({ onBack }) {
         {messages.map((msg, i) => (
           <div key={msg.id}>
             {i > 0 && messages[i-1].from !== msg.from && <div style={{ height:4 }}/>}
-            <Bubble msg={msg} onReact={addReaction} />
+            <Bubble
+              msg={msg}
+              onReact={addReaction}
+              onReply={text => setReplyTo(text)}
+              onPin={pinMessage}
+              onDelete={deleteMessage}
+              isLastSeen={msg.id === lastSeenId}
+            />
           </div>
         ))}
 
@@ -500,7 +557,7 @@ export default function ChatScreen({ onBack }) {
             onBlur={e => { e.target.style.borderColor="rgba(255,255,255,.1)"; }}
           />
           <div onClick={() => { cycleEmoji(); setShowEmoji(v => !v); }} style={{
-            position:"absolute", right:10, bottom:8,
+            position:"absolute", right:10, top:"50%", transform:"translateY(-50%)",
             fontSize:20, cursor:"pointer", lineHeight:1,
             transition:"transform .2s cubic-bezier(.34,1.56,.64,1)",
           }}>
