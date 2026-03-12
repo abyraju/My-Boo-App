@@ -3,6 +3,8 @@ const SCREENS = {
   REGISTER:      "register",
   PASSWORD:      "password",
   AVATAR:        "avatar",
+  // ── Cloud provider (Boo Private login path) ──
+  CLOUD_SETUP:   "cloud_setup",
   PAIRING:       "pairing",
   PAIR_SUCCESS:  "pair_success",
   PAIR_BLOCKED:  "pair_blocked",

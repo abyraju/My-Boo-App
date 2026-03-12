@@ -86,5 +86,75 @@ export const COUNTRIES = [
   { name: "Zimbabwe",               code: "ZW", dial: "+263" },
 ];
 
-// Placeholder — replace with a real generated value from your auth logic
-export const BOO_ID = "A3K9P2X8Q";
+// ─────────────────────────────────────────────────────────────────────────────
+// ID / Key generators
+// In production these run server-side on account creation / pairing.
+// The stubs here let the skeleton render realistic placeholder values.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CHARSET_ALNUM = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no O/0/I/1 to avoid confusion
+
+/** Generates a 6-character alphanumeric Boo ID (permanent user identity). */
+export function generateBooId() {
+  return Array.from({ length: 6 }, () =>
+    CHARSET_ALNUM[Math.floor(Math.random() * CHARSET_ALNUM.length)]
+  ).join("");
+}
+
+/**
+ * Generates the 9-character Couple's Key — created once on successful pairing.
+ * This IS the AES-256 encryption/decryption key for all synced couple data.
+ * It is stored on-device in the Keychain / Keystore and NEVER transmitted.
+ */
+export function generateCouplesKey() {
+  return Array.from({ length: 9 }, () =>
+    CHARSET_ALNUM[Math.floor(Math.random() * CHARSET_ALNUM.length)]
+  ).join("");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Demo / placeholder values (used while the real auth layer isn't wired up)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** 6-char Boo ID — displayed on Pairing screen for the current user to share. */
+export const BOO_ID = "A3K9BX"; // TODO: replace with generateBooId() result stored in user session
+
+/**
+ * 9-char Couple's Key — generated the moment both users pair.
+ * Shown once in the PairSuccess screen, then locked inside Keychain/Keystore.
+ * Must NEVER be transmitted or logged.
+ */
+export const COUPLES_KEY = "X7R2MN4KQ"; // TODO: replace with generateCouplesKey() result and store securely
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Supported cloud storage providers (for CloudProviderScreen)
+// ─────────────────────────────────────────────────────────────────────────────
+export const CLOUD_PROVIDERS = [
+  {
+    id:       "google_drive",
+    name:     "Google Drive",
+    icon:     "🟡",
+    scope:    "drive.appdata",
+    api:      "Drive API v3",
+    freeTier: "15 GB",
+    note:     "Recommended — used automatically when you sign in with Google",
+  },
+  {
+    id:       "dropbox",
+    name:     "Dropbox",
+    icon:     "🔵",
+    scope:    "App folder",
+    api:      "Dropbox API v2",
+    freeTier: "2 GB",
+    note:     "Restricted app folder — Boo can't see your other files",
+  },
+  {
+    id:       "onedrive",
+    name:     "OneDrive",
+    icon:     "☁️",
+    scope:    "approot",
+    api:      "Microsoft Graph",
+    freeTier: "5 GB",
+    note:     "Restricted approot folder — Boo can't see your other files",
+  },
+];

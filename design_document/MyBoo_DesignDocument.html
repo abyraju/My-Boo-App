@@ -833,6 +833,8 @@ footer {
     <a href="#typography">Type</a>
     <a href="#style">Style</a>
     <a href="#screens">Screens</a>
+    <a href="#security">Security</a>
+    <a href="#chatspec">Chat Spec</a>
     <a href="#structure">Structure</a>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Open menu">
@@ -851,6 +853,8 @@ footer {
   <a href="#style"      onclick="closeDrawer()">App Style</a>
   <div class="mobile-drawer-divider"></div>
   <a href="#screens"    onclick="closeDrawer()">Screens</a>
+  <a href="#security"  onclick="closeDrawer()">Security</a>
+  <a href="#chatspec"  onclick="closeDrawer()">Chat Spec</a>
   <a href="#structure"  onclick="closeDrawer()">Structure</a>
 </div>
 
@@ -860,13 +864,13 @@ footer {
     <div class="fh">♥</div><div class="fh">♥</div><div class="fh">♥</div>
     <div class="fh">♥</div><div class="fh">♥</div><div class="fh">♥</div>
   </div>
-  <div class="hero-eyebrow">Design Document · Phase 1.1</div>
+  <div class="hero-eyebrow">Design Document · Phase 1 Reviewing</div>
   <h1 class="hero-title">My <em>Boo</em></h1>
   <p class="hero-sub">Just the two of you</p>
   <div class="hero-tags">
     <span class="tag">Auth &amp; Pairing</span>
     <span class="tag">15 Screens</span>
-    <span class="tag">Version 1.1</span>
+    <span class="tag">Version 1.2</span>
     <span class="tag">React · Vite</span>
     <span class="tag">2026</span>
   </div>
@@ -915,7 +919,10 @@ footer {
           </div>
         </div>
         <ul class="feat-list">
-          <li>Register and link with a partner via 9-character Boo ID</li>
+          <li>Register and link with a partner via unique <strong>6-character Boo ID</strong></li>
+          <li>On pairing, a <strong>9-character Couple's Key</strong> is generated and stored on-device (AES-256)</li>
+          <li>Three login methods: Google OAuth · Boo Private Login · Apple (required for iOS)</li>
+          <li>App lock: PIN (4–6 digit) · Fingerprint (Touch ID) · Face Unlock (Face ID / Android)</li>
           <li>Exclusive two-person profile — no third party can join</li>
           <li>Google Sign-In + Boo Private Login (email, phone, country, birthday)</li>
           <li>Apple Sign-In required before iOS App Store release</li>
@@ -930,15 +937,23 @@ footer {
           <span class="feat-icon">💬</span>
           <div>
             <div class="feat-title">Chat &amp; Media Sharing</div>
-            <div class="feat-phase-row"><span class="fpill fpill-p2">Phase 2</span><span class="fpill fpill-high">High</span></div>
+            <div class="feat-phase-row"><span class="fpill fpill-p1">Phase 1</span><span class="fpill fpill-crit">Critical</span></div>
           </div>
         </div>
         <ul class="feat-list">
-          <li>Real-time private messaging between partners</li>
-          <li>Share images, videos, and files within the chat</li>
-          <li>Share social media clips — Reels, TikToks, YouTube videos</li>
+          <li>Real-time private messaging — full-screen immersive view, no nav bar</li>
+          <li>Share images, videos, files, and social media clips (Reels, TikToks, YouTube)</li>
+          <li>Voice notes (hold) and video notes (toggle mic→cam, then hold)</li>
+          <li>Swipe any bubble to reply-to; swipe screen edge to go back</li>
+          <li>Double-tap empty screen area → opens camera to capture &amp; send</li>
+          <li>Long-press bubble → emoji reaction bar (❤️ 😂 😮 😢 🔥 💕)</li>
+          <li>Pinned message banner — long press → Pin → collapsible top banner</li>
+          <li>Emoji button cycles through 10 emojis on each tap (personality &amp; delight)</li>
+          <li>Shortcode autocomplete: type <code>:heart:</code> → ❤️ with suggestion row</li>
+          <li>Chat customization: background, bubble style, notification tone, disappearing messages</li>
+          <li>Slash commands (late phase): <code>/timer</code>, <code>/reminder</code>, <code>/mood</code>, <code>/date</code></li>
         </ul>
-        <div class="feat-note">💡 Real-time · Firebase Firestore / Supabase Realtime</div>
+        <div class="feat-note">💡 Entry: FAB radial → Message · Real-time · Firebase Firestore / Supabase Realtime</div>
       </div>
 
       <div class="feat-card">
@@ -995,7 +1010,7 @@ footer {
           <span class="feat-icon">🎮</span>
           <div>
             <div class="feat-title">2-Player Mini Games</div>
-            <div class="feat-phase-row"><span class="fpill fpill-p3">Phase 3</span><span class="fpill fpill-norm">Normal</span></div>
+            <div class="feat-phase-row"><span class="fpill fpill-p4">Phase 4</span><span class="fpill fpill-norm">Normal</span></div>
           </div>
         </div>
         <ul class="feat-list">
@@ -1057,16 +1072,16 @@ footer {
   <div class="reveal">
     <p class="section-eyebrow">03</p>
     <h2 class="section-title">Dev <em>Progress</em></h2>
-    <p class="section-lead">Five phases from auth to LDR features. Phase 1 (Couple Registration &amp; Pairing) is the foundation — nothing else can ship without it.</p>
+    <p class="section-lead">Five phases from auth to polish. Phase 1 (Auth &amp; Pairing) is <strong style="color:#7eb8f5;">Ongoing</strong> — all core screens built, backend wiring and sync architecture in active development.</p>
   </div>
 
   <!-- Phase legend -->
   <div class="phase-legend reveal" style="transition-delay:.08s;">
     <div class="phase-badge ph1">Phase 1 <span>Auth &amp; Pairing</span></div>
-    <div class="phase-badge ph2">Phase 2 <span>Core Features</span></div>
-    <div class="phase-badge ph3">Phase 3 <span>Calls &amp; Games</span></div>
-    <div class="phase-badge ph4">Phase 4 <span>LDR Features</span></div>
-    <div class="phase-badge ph5">Phase 5 <span>Polish &amp; Launch</span></div>
+    <div class="phase-badge ph2">Phase 2 <span>Gallery &amp; Milestones</span></div>
+    <div class="phase-badge ph3">Phase 3 <span>Calls &amp; Watch Together</span></div>
+    <div class="phase-badge ph4">Phase 4 <span>Games &amp; LDR Features</span></div>
+    <div class="phase-badge ph5">Phase 5 <span>Point Tracker &amp; Polish</span></div>
   </div>
 
   <!-- Progress table -->
@@ -1082,13 +1097,19 @@ footer {
       <span class="prog-feature"><span class="prog-icon">👫</span>Couple Registration &amp; Pairing</span>
       <span><span class="fpill fpill-p1">Phase 1</span></span>
       <span><span class="pri-badge pri-crit">Critical</span></span>
-      <span><span class="stat-badge stat-ns">Not Started</span></span>
+      <span><span class="stat-badge stat-ongoing">Ongoing</span></span>
+    </div>
+    <div class="prog-row">
+      <span class="prog-feature"><span class="prog-icon">🏠</span>Home Screen &amp; Navigation</span>
+      <span><span class="fpill fpill-p1">Phase 1</span></span>
+      <span><span class="pri-badge pri-crit">Critical</span></span>
+      <span><span class="stat-badge stat-ongoing">Ongoing</span></span>
     </div>
     <div class="prog-row">
       <span class="prog-feature"><span class="prog-icon">💬</span>Private Chat</span>
-      <span><span class="fpill fpill-p2">Phase 2</span></span>
-      <span><span class="pri-badge pri-high">High</span></span>
-      <span><span class="stat-badge stat-ns">Not Started</span></span>
+      <span><span class="fpill fpill-p1">Phase 1</span></span>
+      <span><span class="pri-badge pri-crit">Critical</span></span>
+      <span><span class="stat-badge stat-ongoing">Ongoing</span></span>
     </div>
     <div class="prog-row">
       <span class="prog-feature"><span class="prog-icon">🔗</span>Social Clip Sharing</span>
@@ -1134,7 +1155,7 @@ footer {
     </div>
     <div class="prog-row">
       <span class="prog-feature"><span class="prog-icon">🎮</span>2-Player Mini Games</span>
-      <span><span class="fpill fpill-p3">Phase 3</span></span>
+      <span><span class="fpill fpill-p4">Phase 4</span></span>
       <span><span class="pri-badge pri-norm">Normal</span></span>
       <span><span class="stat-badge stat-ns">Not Started</span></span>
     </div>
@@ -1176,19 +1197,19 @@ footer {
     </div>
     <div class="prog-row prog-row-ldr">
       <span class="prog-feature"><span class="prog-icon">🎯</span>Point Tracker</span>
-      <span><span class="fpill fpill-p4">Phase 4</span></span>
+      <span><span class="fpill fpill-p4" style="background:rgba(160,80,220,.12);border-color:rgba(160,80,220,.25);color:#c390f5;">Phase 5</span></span>
       <span><span class="pri-badge pri-low">Low</span></span>
       <span><span class="stat-badge stat-ns">Not Started</span></span>
     </div>
   </div>
 
-  <!-- DB Schema note -->
   <div class="reveal" style="transition-delay:.15s;margin-top:32px;">
-    <p class="color-group-title" style="margin-bottom:12px;">Database Schema (Core Tables)</p>
+    <p class="color-group-title" style="margin-bottom:12px;">Database Schema (Minimal — Identity &amp; Pairing Only)</p>
+    <p style="font-size:12px;color:var(--faint);margin-bottom:14px;line-height:1.6;">With user-owned cloud storage, the central database is <strong style="color:#fff;">minimal</strong> — it only handles identity, pairing, and presence. All shared couple data (chat, gallery, etc.) lives in the user's cloud, not here.</p>
     <div class="filetree" style="margin-top:0;font-size:12px;">
 <div class="ft-line"><span class="ft-dir">users</span></div>
 <div class="ft-line"><span class="ft-file">├── user_id</span><span class="ft-note">          Firebase/Supabase UID</span></div>
-<div class="ft-line"><span class="ft-file">├── boo_id</span><span class="ft-note">           9-char unique alphanumeric · permanent</span></div>
+<div class="ft-line"><span class="ft-file">├── boo_id</span><span class="ft-note">           6-char unique alphanumeric · permanent</span></div>
 <div class="ft-line"><span class="ft-file">├── name, email, phone, country, birthday</span></div>
 <div class="ft-line"><span class="ft-file">├── profile_picture_url</span><span class="ft-note">  string → Firebase/Supabase Storage</span></div>
 <div class="ft-line"><span class="ft-file">├── coupled_with</span><span class="ft-note">     FK → users.user_id · nullable</span></div>
@@ -1197,7 +1218,13 @@ footer {
 <div class="ft-line"><span class="ft-file">├── couple_id</span></div>
 <div class="ft-line"><span class="ft-file">├── partner_1_id</span><span class="ft-note">     FK → users.user_id</span></div>
 <div class="ft-line"><span class="ft-file">├── partner_2_id</span><span class="ft-note">     FK → users.user_id</span></div>
+<div class="ft-line"><span class="ft-file">├── couples_key</span><span class="ft-note">      9-char AES-256 encryption key · generated on pairing · stored in device Keychain/Keystore</span></div>
 <div class="ft-line"><span class="ft-file">└── created_at</span><span class="ft-note">       used for Milestone Tracker countdown</span></div>
+<div class="ft-line" style="margin-top:8px;"><span class="ft-dir">presence</span><span class="ft-note">   (new — for partner activity indicator)</span></div>
+<div class="ft-line"><span class="ft-file">├── user_id</span><span class="ft-note">          FK → users.user_id</span></div>
+<div class="ft-line"><span class="ft-file">├── is_online</span><span class="ft-note">        boolean</span></div>
+<div class="ft-line"><span class="ft-file">├── last_seen</span><span class="ft-note">        timestamp</span></div>
+<div class="ft-line"><span class="ft-file">└── updated_at</span><span class="ft-note">       timestamp</span></div>
     </div>
   </div>
 </section>
@@ -1283,13 +1310,13 @@ footer {
       </div>
       <div class="type-row"><span class="type-row-label">App Logo</span><span class="type-row-size">44px</span><span class="type-row-weight">300 Light</span><span class="type-row-specimen" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">My <em style="font-style:italic;color:#f5a8b8;">Boo</em></span></div>
       <div class="type-row"><span class="type-row-label">Page Heading</span><span class="type-row-size">24px</span><span class="type-row-weight">300 Light</span><span class="type-row-specimen" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;">Create your <em style="font-style:italic;color:#f5a8b8;">account</em></span></div>
-      <div class="type-row"><span class="type-row-label">Boo ID</span><span class="type-row-size">33px</span><span class="type-row-weight">300 Light</span><span class="type-row-specimen" style="font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:4px;background:linear-gradient(135deg,#fff,#f5a8b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">A3K9P2X8Q</span></div>
+      <div class="type-row"><span class="type-row-label">Boo ID</span><span class="type-row-size">33px</span><span class="type-row-weight">300 Light</span><span class="type-row-specimen" style="font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:4px;background:linear-gradient(135deg,#fff,#f5a8b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">A3K9BX</span></div>
       <div class="type-row"><span class="type-row-label">Section Label</span><span class="type-row-size">11px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.28);">YOUR INFO</span></div>
       <div class="type-row"><span class="type-row-label">Form Label</span><span class="type-row-size">11px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.22);">EMAIL ADDRESS</span></div>
       <div class="type-row"><span class="type-row-label">Body / Sub-copy</span><span class="type-row-size">13px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:13px;color:rgba(255,255,255,.42);">Your private space starts here.</span></div>
       <div class="type-row"><span class="type-row-label">Input Value</span><span class="type-row-size">14px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:13px;color:#fff;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c3cec7dae2c7cfc3cbce8cc1cdcf">[email&#160;protected]</a></span></div>
       <div class="type-row"><span class="type-row-label">Button Label</span><span class="type-row-size">15px</span><span class="type-row-weight">500 Medium</span><span class="type-row-specimen" style="font-size:14px;font-weight:500;color:#fff;">Continue →</span></div>
-      <div class="type-row"><span class="type-row-label">Metadata</span><span class="type-row-size">11px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:11px;color:rgba(255,255,255,.22);">9-character alphanumeric · unique per account</span></div>
+      <div class="type-row"><span class="type-row-label">Metadata</span><span class="type-row-size">11px</span><span class="type-row-weight">400 Regular</span><span class="type-row-specimen" style="font-size:11px;color:rgba(255,255,255,.22);">6-character alphanumeric · unique per account</span></div>
     </div>
   </div>
 </section>
@@ -1358,7 +1385,7 @@ footer {
   <div class="reveal screens-intro">
     <p class="section-eyebrow">07</p>
     <h2 class="section-title">Screen <em>Mockups</em></h2>
-    <p class="section-lead">All 9 screens from Phase 1.1 — Auth, Pairing, and Account. Each rendered at full fidelity in the app's exact color system.</p>
+    <p class="section-lead">All 15 screens across Phase 1 — Auth, Pairing, Chat, Home Shell, and Profile. Each rendered at full fidelity in the app's exact color system.</p>
   </div>
 
   <div class="screens-grid">
@@ -1481,7 +1508,7 @@ footer {
             <div class="m-sub">Share your Boo ID or enter theirs.</div>
             <div class="m-boo-box">
               <div style="font-size:6px;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;">Your Boo ID</div>
-              <div class="m-boo-id">A3K9P2X8Q</div>
+              <div class="m-boo-id">A3K9BX</div>
               <button style="margin-top:7px;padding:3px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.3);font-size:6px;font-family:'DM Sans',sans-serif;cursor:default;">Copy ID</button>
             </div>
             <div class="m-div"><div class="m-div-line"></div>partner's Boo ID<div class="m-div-line"></div></div>
@@ -1493,7 +1520,7 @@ footer {
           </div>
         </div>
       </div>
-      <p class="screen-desc">Step 4 of 4. Your Boo ID display + partner ID entry.</p>
+      <p class="screen-desc">Step 4 of 5. Your Boo ID (6 chars) display + partner ID entry.</p>
     </div>
 
     <!-- Pair Success -->
@@ -1583,7 +1610,7 @@ footer {
             </div>
             <div class="m-sec-lbl" style="margin-top:4px;">Boo ID</div>
             <div class="m-boo-box" style="padding:7px;">
-              <div class="m-boo-id" style="font-size:9px;letter-spacing:2px;">A3K9P2X8Q</div>
+              <div class="m-boo-id" style="font-size:9px;letter-spacing:2px;">A3K9BX</div>
               <div style="font-size:5.5px;color:rgba(255,255,255,.2);margin-top:3px;">Cannot be changed</div>
             </div>
             <button class="m-btn m-btn-p">Save Changes</button>
@@ -1594,6 +1621,256 @@ footer {
     </div>
 
   </div>
+</section>
+
+<!-- ── SECURITY ARCHITECTURE ─────────────────────────────── -->
+<section id="security">
+  <div class="reveal">
+    <p class="section-eyebrow">07 ↳</p>
+    <h2 class="section-title">Security &amp; Sync <em>Architecture</em></h2>
+    <p class="section-lead">No central database. No developer-hosted storage. Data lives in the <strong style="color:#fff;">user's own cloud account</strong>, encrypted end-to-end with a key only the two devices ever hold.</p>
+  </div>
+
+  <!-- Decision banner -->
+  <div class="card reveal" style="transition-delay:.04s;margin-top:40px;border-color:rgba(94,245,160,.18);background:rgba(94,245,160,.04);">
+    <div style="display:flex;align-items:flex-start;gap:14px;">
+      <div style="font-size:28px;flex-shrink:0;">✅</div>
+      <div>
+        <p style="font-size:14px;font-weight:500;color:#fff;margin-bottom:6px;">Architecture Decision — User-Owned Cloud Storage</p>
+        <p style="font-size:13px;color:var(--dim);line-height:1.7;">Instead of a central database (Firebase/Supabase), the app uses the <strong style="color:#fff;">user's personal cloud account</strong> (Google Drive, Dropbox, OneDrive) as a private encrypted data relay. The developer never hosts, sees, or pays for stored data. Three alternatives were evaluated and rejected: <span style="color:rgba(255,255,255,.4);">Gun.js</span> (unreliable NAT traversal, weak encryption defaults), <span style="color:rgba(255,255,255,.4);">Yjs + PeerJS</span> (requires both peers online simultaneously, complex setup).</p>
+        <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+          <span style="background:rgba(94,245,160,.1);border:1px solid rgba(94,245,160,.2);color:var(--mint);border-radius:8px;padding:4px 11px;font-size:11px;letter-spacing:.5px;">💰 Zero hosting cost</span>
+          <span style="background:rgba(94,245,160,.1);border:1px solid rgba(94,245,160,.2);color:var(--mint);border-radius:8px;padding:4px 11px;font-size:11px;letter-spacing:.5px;">📈 Infinite scale</span>
+          <span style="background:rgba(94,245,160,.1);border:1px solid rgba(94,245,160,.2);color:var(--mint);border-radius:8px;padding:4px 11px;font-size:11px;letter-spacing:.5px;">🛡 Zero developer liability</span>
+          <span style="background:rgba(94,245,160,.1);border:1px solid rgba(94,245,160,.2);color:var(--mint);border-radius:8px;padding:4px 11px;font-size:11px;letter-spacing:.5px;">📵 Offline-first</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 1: Auth + App Lock -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;">
+
+    <div class="card reveal" style="transition-delay:.05s;">
+      <p class="color-group-title" style="margin-bottom:14px;">🔐 Login Methods</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:110px 1fr;"><span>Method</span><span>Notes</span></div>
+        <div class="comp-row" style="grid-template-columns:110px 1fr;"><span class="dim">Google OAuth</span><span class="dim">Fast frictionless sign-in · doubles as cloud storage provider</span></div>
+        <div class="comp-row" style="grid-template-columns:110px 1fr;"><span class="dim">Boo Private</span><span class="dim">Full name · country · phone · email · birthday · optional avatar</span></div>
+        <div class="comp-row" style="grid-template-columns:110px 1fr;"><span class="dim">Apple Sign-In</span><span class="dim" style="color:#ff8a8a;">⚠ Mandatory before iOS App Store release</span></div>
+      </div>
+      <p style="font-size:11px;color:var(--faint);margin-top:10px;line-height:1.6;">App uses OAuth 2.0 scopes — the user never shares their password with the app. Restricted <span class="mono" style="font-size:10px;color:var(--rose-lt);">appDataFolder</span> permission ensures the app can only see its own hidden folder.</p>
+    </div>
+
+    <div class="card reveal" style="transition-delay:.07s;">
+      <p class="color-group-title" style="margin-bottom:14px;">🔒 App Lock</p>
+      <p style="font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:12px;">After initial login, a secondary lock layer is set up — like a banking app. Users don't re-authenticate from scratch on every open.</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:110px 1fr;"><span>Method</span><span>Detail</span></div>
+        <div class="comp-row" style="grid-template-columns:110px 1fr;"><span class="dim">PIN</span><span class="dim">4–6 digit. Set during onboarding. Required fallback when biometrics fail.</span></div>
+        <div class="comp-row" style="grid-template-columns:110px 1fr;"><span class="dim">Fingerprint</span><span class="dim">Touch ID (iOS) · Android Fingerprint API</span></div>
+        <div class="comp-row" style="grid-template-columns:110px 1fr;"><span class="dim">Face Unlock</span><span class="dim">Face ID (iOS) · Android Face Recognition API</span></div>
+      </div>
+      <ul class="feat-list" style="margin-top:10px;">
+        <li>PIN stored hashed in device Keychain / Keystore — never plaintext</li>
+        <li>5 wrong attempts → temporary lockout</li>
+        <li>Danger Zone entry requires PIN explicitly — biometrics not accepted</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Row 2: Couple's Key + Boo ID comparison -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;">
+
+    <div class="card reveal" style="transition-delay:.09s;border-color:rgba(201,169,110,.2);background:rgba(201,169,110,.04);">
+      <p class="color-group-title" style="margin-bottom:14px;">🔑 The Couple's Key — AES-256 Root</p>
+      <p style="font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:14px;">When two users pair, a <strong style="color:#fff;">9-character Couple's Key</strong> is generated. This key <em>is</em> the AES-256 encryption-decryption key for all synced data. It never leaves the device and is never transmitted over the network.</p>
+      <div class="comp-table">
+        <div class="comp-row" style="grid-template-columns:120px 1fr;"><span class="dim">Generated on</span><span class="dim">Successful pairing — automatic, no user action</span></div>
+        <div class="comp-row" style="grid-template-columns:120px 1fr;"><span class="dim">Stored in</span><span class="dim">Device Keychain (iOS) / Keystore (Android) — locked by PIN / biometrics</span></div>
+        <div class="comp-row" style="grid-template-columns:120px 1fr;"><span class="dim">Transmitted?</span><span class="dim" style="color:var(--mint);">Never — the key never leaves the device</span></div>
+        <div class="comp-row" style="grid-template-columns:120px 1fr;"><span class="dim">Visibility</span><span class="dim">Only visible within the app. Must never be shared with a third person.</span></div>
+        <div class="comp-row" style="grid-template-columns:120px 1fr;"><span class="dim">Cleared on</span><span class="dim">Unpair or account deletion</span></div>
+      </div>
+    </div>
+
+    <div class="card reveal" style="transition-delay:.1s;">
+      <p class="color-group-title" style="margin-bottom:14px;">🆔 Boo ID vs Couple's Key</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:100px 1fr 1fr;"><span>Attribute</span><span>Boo ID (6-char)</span><span>Couple's Key (9-char)</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr 1fr;"><span class="dim">Visibility</span><span class="dim">Public — share freely</span><span class="dim" style="color:var(--gold);">🔒 Secret — app only</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr 1fr;"><span class="dim">Purpose</span><span class="dim">Discovery &amp; pairing</span><span class="dim">IS the AES-256 key</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr 1fr;"><span class="dim">Who knows it</span><span class="dim">Anyone you share it with</span><span class="dim">Only the two devices</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr 1fr;"><span class="dim">Storage</span><span class="dim">Users DB table</span><span class="dim">Device Keychain/Keystore</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr 1fr;"><span class="dim">Transmitted</span><span class="dim">Yes — for pairing</span><span class="dim" style="color:var(--mint);">Never</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync workflow -->
+  <div class="card reveal" style="transition-delay:.11s;margin-top:24px;">
+    <p class="color-group-title" style="margin-bottom:16px;">🔄 Sync Workflow — 4 Steps</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 12px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">💾</div>
+        <div style="font-size:11px;font-weight:600;color:#fff;letter-spacing:.5px;margin-bottom:6px;">1 · Local Save</div>
+        <div style="font-size:11px;color:var(--dim);line-height:1.6;">Save instantly to device <span class="mono" style="color:var(--rose-lt);font-size:10px;">IndexedDB</span>. App is fully offline-capable — never blocked by network.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 12px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">🔐</div>
+        <div style="font-size:11px;font-weight:600;color:#fff;letter-spacing:.5px;margin-bottom:6px;">2 · Encrypt</div>
+        <div style="font-size:11px;color:var(--dim);line-height:1.6;">Scramble with the Couple's Key (AES-256) directly on device. Plaintext <strong style="color:#fff;">never leaves</strong> the phone.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 12px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">☁️</div>
+        <div style="font-size:11px;font-weight:600;color:#fff;letter-spacing:.5px;margin-bottom:6px;">3 · Upload</div>
+        <div style="font-size:11px;color:var(--dim);line-height:1.6;">Push encrypted blob to the user's cloud <span class="mono" style="color:var(--rose-lt);font-size:10px;">appDataFolder</span>. Cloud provider sees ciphertext only.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 12px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">📲</div>
+        <div style="font-size:11px;font-weight:600;color:#fff;letter-spacing:.5px;margin-bottom:6px;">4 · Listen &amp; Decrypt</div>
+        <div style="font-size:11px;color:var(--dim);line-height:1.6;">Partner's device polls / receives push, downloads blob, decrypts locally, merges into <span class="mono" style="color:var(--rose-lt);font-size:10px;">IndexedDB</span>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Cloud providers + metadata mitigation -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;">
+
+    <div class="card reveal" style="transition-delay:.12s;">
+      <p class="color-group-title" style="margin-bottom:14px;">☁️ Supported Cloud Providers</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:90px 90px 1fr 60px;"><span>Provider</span><span>API</span><span>Scope / Hidden Folder</span><span>Free</span></div>
+        <div class="comp-row" style="grid-template-columns:90px 90px 1fr 60px;"><span class="dim">Google Drive</span><span class="mono" style="font-size:10px;color:var(--rose-lt);">Drive API v3</span><span class="mono" style="font-size:10px;color:var(--faint);">drive.appdata</span><span class="dim">15 GB</span></div>
+        <div class="comp-row" style="grid-template-columns:90px 90px 1fr 60px;"><span class="dim">Dropbox</span><span class="mono" style="font-size:10px;color:var(--rose-lt);">API v2</span><span class="mono" style="font-size:10px;color:var(--faint);">App folder</span><span class="dim">2 GB</span></div>
+        <div class="comp-row" style="grid-template-columns:90px 90px 1fr 60px;"><span class="dim">OneDrive</span><span class="mono" style="font-size:10px;color:var(--rose-lt);">MS Graph</span><span class="mono" style="font-size:10px;color:var(--faint);">approot</span><span class="dim">5 GB</span></div>
+      </div>
+      <p style="font-size:11px;color:var(--faint);margin-top:10px;line-height:1.6;">The <span class="mono" style="color:var(--rose-lt);font-size:10px;">appDataFolder</span> scope ensures the app is completely blind to the user's other personal files — it can only access its own hidden folder.</p>
+    </div>
+
+    <div class="card reveal" style="transition-delay:.13s;">
+      <p class="color-group-title" style="margin-bottom:14px;">🕵️ Metadata Mitigation</p>
+      <p style="font-size:12px;color:var(--faint);margin-bottom:12px;line-height:1.6;">Content is fully encrypted, but the cloud provider can still see the envelope (metadata). These strategies minimise what's exposed:</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:80px 1fr 1fr;"><span>Leaked</span><span>What's Visible</span><span>Mitigation</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 1fr 1fr;"><span class="dim">Identity</span><span class="dim">Gmail accounts syncing</span><span class="dim">Use dedicated accounts if needed</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 1fr 1fr;"><span class="dim">Timestamps</span><span class="dim">When app is active</span><span class="dim">Dummy syncs at random intervals</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 1fr 1fr;"><span class="dim">Volume</span><span class="dim">File sizes</span><span class="dim" style="color:var(--mint);">Fixed padding — every file is exactly 1 MB</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 1fr 1fr;"><span class="dim">Filenames</span><span class="dim">Could reveal context</span><span class="dim" style="color:var(--mint);">Random UUIDs — no descriptive names</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conflict resolution + pairing security -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;">
+
+    <div class="card reveal" style="transition-delay:.14s;">
+      <p class="color-group-title" style="margin-bottom:10px;">⚡ Conflict Resolution</p>
+      <p style="font-size:12px;color:var(--faint);line-height:1.6;margin-bottom:12px;">Both devices may write simultaneously. A <strong style="color:#fff;">Last-Write-Wins (LWW) + CRDT-lite</strong> merge strategy handles this:</p>
+      <ul class="feat-list">
+        <li>Each update carries a <strong>timestamp</strong> and <strong>device ID</strong></li>
+        <li>Same field edited by both → <strong>latest timestamp wins</strong></li>
+        <li>Different fields edited → <strong>both changes merged cleanly</strong></li>
+        <li>Short version log (last 5–10 states) kept for rollback if needed</li>
+      </ul>
+    </div>
+
+    <div class="card reveal" style="transition-delay:.15s;">
+      <p class="color-group-title" style="margin-bottom:10px;">🆔 Pairing &amp; Access Security</p>
+      <ul class="feat-list">
+        <li><strong>6-character Boo ID</strong> is public-facing — share freely to invite a partner</li>
+        <li>Pairing blocked if target ID is already paired — enforced at DB level, not just UI</li>
+        <li>Home screen only renders after a valid <span class="mono" style="font-size:11px;color:var(--rose-lt);">couple_id</span> is confirmed</li>
+        <li>On unpair: Couple's Key cleared from both devices · cloud sync folders wiped</li>
+        <li>Delete Everything: PIN re-entry + type <span class="mono" style="font-size:11px;color:var(--rose-lt);">DELETE</span> to confirm · all data purged · both users signed out</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── CHAT SPEC ───────────────────────────────────────── -->
+<section id="chatspec" style="padding-top:0;">
+  <div class="reveal">
+    <p class="section-eyebrow">06 ↳</p>
+    <h2 class="section-title">Chat <em>Spec</em></h2>
+    <p class="section-lead">Private Chat is Phase 1 Critical — the primary daily feature. Full spec from the Notion workspace.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
+
+    <!-- Gestures -->
+    <div class="card reveal" style="transition-delay:.05s;">
+      <p class="color-group-title" style="margin-bottom:14px;">Gestures &amp; Interactions</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:1fr 1fr 1.2fr;"><span>Gesture</span><span>Where</span><span>Action</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr 1.2fr;"><span class="mono">Double tap</span><span class="dim">Empty screen</span><span class="dim">Camera → capture &amp; send</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr 1.2fr;"><span class="mono">Swipe ←/→</span><span class="dim">Message bubble</span><span class="dim">Reply to that message</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr 1.2fr;"><span class="mono">Swipe ←/→</span><span class="dim">Screen edge</span><span class="dim">Go back</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr 1.2fr;"><span class="mono">Long press</span><span class="dim">Message bubble</span><span class="dim">Reaction bar (❤️😂😮😢🔥💕)</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr 1.2fr;"><span class="mono">Long press</span><span class="dim">Message bubble</span><span class="dim">Context menu → Pin</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr 1.2fr;"><span class="mono">Hold</span><span class="dim">Send button</span><span class="dim">Record voice / video note</span></div>
+      </div>
+    </div>
+
+    <!-- Input bar -->
+    <div class="card reveal" style="transition-delay:.08s;">
+      <p class="color-group-title" style="margin-bottom:14px;">Input Bar Controls</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:80px 40px 1fr;"><span>Button</span><span>Icon</span><span>Function</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 40px 1fr;"><span class="dim">Attach</span><span class="mono">＋</span><span class="dim">Bottom sheet: Image · Video · Link</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 40px 1fr;"><span class="dim">Emoji</span><span class="mono">😊</span><span class="dim">Cycles through 10 emojis on each tap — adds personality</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 40px 1fr;"><span class="dim">Voice Note</span><span class="mono">🎙️</span><span class="dim">Hold to record. Tap icon to toggle → video mode</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 40px 1fr;"><span class="dim">Video Note</span><span class="mono">📹</span><span class="dim">Hold to record. Tap icon to toggle → voice mode</span></div>
+        <div class="comp-row" style="grid-template-columns:80px 40px 1fr;"><span class="dim">Send</span><span class="mono">➤</span><span class="dim">Replaces voice/video when text is typed</span></div>
+      </div>
+    </div>
+
+    <!-- Emoji / Shortcodes -->
+    <div class="card reveal" style="transition-delay:.1s;">
+      <p class="color-group-title" style="margin-bottom:14px;">Emoji Panel &amp; Shortcodes</p>
+      <p style="font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:12px;">The emoji picker has 3 tabs: 😊 Emoji · 🎭 Stickers · 🔍 GIFs (Tenor / Giphy). The emoji button itself cycles through 10 different emojis on each tap for delight.</p>
+      <p style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:8px;">Shortcode Autocomplete</p>
+      <div class="comp-table">
+        <div class="comp-row" style="grid-template-columns:1fr 1fr;"><span class="mono">:heart:</span><span class="dim">→ ❤️</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr;"><span class="mono">:fire:</span><span class="dim">→ 🔥</span></div>
+        <div class="comp-row" style="grid-template-columns:1fr 1fr;"><span class="mono">:custom:</span><span class="dim">→ sticker pack assets</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--faint);margin-top:10px;">Autocomplete row appears above keyboard as you type. Shortcode replaced inline on confirm.</p>
+    </div>
+
+    <!-- Slash Commands -->
+    <div class="card reveal" style="transition-delay:.12s;">
+      <p class="color-group-title" style="margin-bottom:6px;">Slash Commands <span style="font-size:10px;color:rgba(201,169,110,.5);margin-left:8px;letter-spacing:1px;">LATE PHASE</span></p>
+      <p style="font-size:12px;color:var(--faint);line-height:1.6;margin-bottom:12px;">Core chat must be stable before slash commands ship. Type <code style="color:var(--rose-lt);font-size:11px;">/</code> to trigger the command palette.</p>
+      <div class="comp-table">
+        <div class="comp-table-head" style="grid-template-columns:100px 1fr;"><span>Command</span><span>Effect</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr;"><span class="mono">/timer</span><span class="dim">Shared countdown timer visible to both partners</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr;"><span class="mono">/reminder</span><span class="dim">Notifies one or both partners at a set time</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr;"><span class="mono">/mood</span><span class="dim">Share a quick mood as a special message card</span></div>
+        <div class="comp-row" style="grid-template-columns:100px 1fr;"><span class="mono">/date</span><span class="dim">Schedule a virtual or in-person date from chat</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pinned messages + chat settings -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;">
+    <div class="card reveal" style="transition-delay:.13s;">
+      <p class="color-group-title" style="margin-bottom:10px;">Pinned Messages</p>
+      <p style="font-size:13px;color:var(--dim);line-height:1.7;">Long press any bubble → context menu → <strong style="color:#fff;">Pin</strong>. Pinned messages appear in a collapsible banner near the top of the chat. Tapping the banner scrolls to the message. Both partners can pin and unpin. Multiple pins supported — newest shown by default.</p>
+    </div>
+    <div class="card reveal" style="transition-delay:.14s;">
+      <p class="color-group-title" style="margin-bottom:10px;">Chat Customization (Settings ⚙️)</p>
+      <ul class="feat-list">
+        <li>🎨 Chat background / wallpaper</li>
+        <li>🔤 Bubble color and style</li>
+        <li>🔔 Notification tone for this chat</li>
+        <li>🔒 Disappearing message mode toggle</li>
+      </ul>
+    </div>
+  </div>
+
 </section>
 
 <!-- ── 6. COMPONENTS ───────────────────────────────────── -->
@@ -1674,7 +1951,7 @@ footer {
 <div class="ft-line"><span class="ft-file">    │   ├── PairingScreen.jsx</span><span class="ft-note">   Boo ID share + partner ID entry</span></div>
 <div class="ft-line"><span class="ft-file">    │   ├── PairSuccessScreen.jsx</span><span class="ft-note">Couple space created celebration</span></div>
 <div class="ft-line"><span class="ft-file">    │   ├── PairBlockedScreen.jsx</span><span class="ft-note">Already-paired error state</span></div>
-<div class="ft-line"><span class="ft-file">    │   └── PinSetupScreen.jsx</span><span class="ft-note">  4-digit PIN setup during onboarding</span></div>
+<div class="ft-line"><span class="ft-file">    │   └── PinSetupScreen.jsx</span><span class="ft-note">  4–6 digit PIN setup · biometric prompt</span></div>
 <div class="ft-line"><span class="ft-dir">    │</span></div>
 <div class="ft-line"><span class="ft-dir">    ├── home/</span><span class="ft-note">                   Post-login home shell</span></div>
 <div class="ft-line"><span class="ft-file">    │   └── HomeScreen.jsx</span><span class="ft-note">      Milestone counter + quick-access grid + LDR chips</span></div>
@@ -1781,7 +2058,7 @@ footer {
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">My <em>Boo</em></div>
-  <div class="footer-meta">Design Document v1.1 · Phase 1.1 · 2026</div>
+  <div class="footer-meta">Design Document v1.2 · Phase 1 Reviewing · 2026</div>
 </footer>
 
 

@@ -33,7 +33,7 @@ const KEYS = [
   {v:""},{v:"0"},{v:"⌫",del:true},
 ];
 
-function PinGate({ onSuccess, onClose }) {
+function PinGate({ onSuccess, onClose, title = "Enter your PIN", subtitle = "Type your PIN to continue" }) {
   const [pin, setPin]   = useState("");
   const [err, setErr]   = useState("");
   const [shake, setShk] = useState(false);
@@ -78,10 +78,10 @@ function PinGate({ onSuccess, onClose }) {
         </div>
         {/* title */}
         <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,fontWeight:300,color:"#fff",textAlign:"center",marginBottom:6}}>
-          Enter your PIN
+          {title}
         </div>
         <div style={{fontSize:12,color:"rgba(255,255,255,.38)",textAlign:"center",marginBottom:24,lineHeight:1.55}}>
-          Type your 4-digit PIN to access Danger Zone
+          {subtitle}
         </div>
         {/* dots */}
         <div style={{display:"flex",gap:14,justifyContent:"center",marginBottom:8}}>
@@ -211,8 +211,10 @@ function Toggle({ on, toggle }) {
 // ── Main screen ───────────────────────────────────────────────────────────────
 export default function MainProfileScreen({ navigate }) {
   const duration = useDuration();
-  const [notifs,  setNotifs]  = useState(true);
-  const [pinGate, setPinGate] = useState(false);
+  const [notifs,       setNotifs]       = useState(true);
+  const [pinGate,      setPinGate]      = useState(false);   // Danger Zone gate
+  const [booIdGate,    setBooIdGate]    = useState(false);   // Boo ID reveal gate
+  const [booIdVisible, setBooIdVisible] = useState(false);   // true after PIN confirmed
 
   return (
     <>
@@ -320,7 +322,39 @@ export default function MainProfileScreen({ navigate }) {
           {/* ── Boo ID ── */}
           <SectionLabel text="Boo ID"/>
           <Card>
-            <Row ico="🆔" top="Permanent · Cannot be changed" val="A3K9P2X8Q" last/>
+            {/* Tapping reveals a PIN gate; once confirmed the ID is shown */}
+            <div
+              className="pr-info-row tappable"
+              onClick={() => {
+                if (!booIdVisible) setBooIdGate(true);
+                else setBooIdVisible(false); // tap again to re-hide
+              }}
+            >
+              <div className="pr-info-ico">🆔</div>
+              <div className="pr-info-label">
+                <div className="pr-info-lbl-top">Permanent · Cannot be changed</div>
+                <div
+                  className="pr-info-lbl-val mono"
+                  style={{
+                    filter: booIdVisible ? "none" : "blur(5px)",
+                    userSelect: booIdVisible ? "text" : "none",
+                    transition: "filter .22s",
+                    letterSpacing: "4px",
+                    fontSize: 16,
+                  }}
+                >
+                  A3K9BX
+                </div>
+              </div>
+              <div style={{
+                fontSize: 11,
+                color: booIdVisible ? "rgba(94,245,160,.5)" : "rgba(255,255,255,.2)",
+                flexShrink: 0,
+                transition: "color .2s",
+              }}>
+                {booIdVisible ? "🔓" : "🔒"}
+              </div>
+            </div>
           </Card>
 
           {/* ── App Settings ── */}
@@ -356,11 +390,23 @@ export default function MainProfileScreen({ navigate }) {
         </div>
       </div>
 
-      {/* PIN gate */}
+      {/* Danger Zone PIN gate */}
       {pinGate && (
         <PinGate
+          title="Enter your PIN"
+          subtitle="PIN required to access Danger Zone"
           onSuccess={()=>{ setPinGate(false); navigate(SCREENS.DANGER_ZONE); }}
           onClose={()=>setPinGate(false)}
+        />
+      )}
+
+      {/* Boo ID reveal PIN gate */}
+      {booIdGate && (
+        <PinGate
+          title={<>Reveal your <em style={{fontStyle:"italic",color:"#f5a8b8"}}>Boo ID</em></>}
+          subtitle="Enter your PIN to reveal your 6-character Boo ID"
+          onSuccess={()=>{ setBooIdGate(false); setBooIdVisible(true); }}
+          onClose={()=>setBooIdGate(false)}
         />
       )}
     </>

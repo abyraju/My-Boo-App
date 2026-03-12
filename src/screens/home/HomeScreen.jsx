@@ -188,6 +188,14 @@ const CSS = `
   .hs-section-lbl::after {
     content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.055);
   }
+  .hs-cal-btn {
+    width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
+    background: rgba(232,116,138,.1); border: 1px solid rgba(232,116,138,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer; transition: background .16s, transform .12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hs-cal-btn:active { background: rgba(232,116,138,.22); transform: scale(.9); }
   .hi-card {
     margin: 0 16px;
     background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
@@ -316,13 +324,23 @@ export default function HomeScreen({ onDrawer }) {
           <div className="couple-date-bottom">{todayFull()}</div>
         </div>
 
-        {/* Highlight */}
-        <div className="hs-section-lbl">Today's Highlight</div>
+        {/* Events section label + calendar shortcut */}
+        <div className="hs-section-lbl">
+          Events
+          {/* Calendar button — will open shared calendar in a later phase */}
+          <div
+            className="hs-cal-btn"
+            title="Calendar (coming soon)"
+            onClick={() => {/* TODO: navigate to SCREENS.CALENDAR */}}
+          >
+            📅
+          </div>
+        </div>
         <div className="hi-card">
-          <div className="hi-ico">✨</div>
+          <div className="hi-ico">📅</div>
           <div className="hi-body">
-            <div className="hi-title">8-month milestone coming up</div>
-            <div className="hi-sub">6 days away — plan something special for Jordan 💕</div>
+            <div className="hi-title">8-month milestone — in 6 days</div>
+            <div className="hi-sub">Plan something special for Jordan 💕</div>
           </div>
         </div>
 
