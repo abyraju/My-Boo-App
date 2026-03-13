@@ -10,19 +10,35 @@ const ATTACH_OPTIONS = [
   { e:"🔗", l:"Link",   s:"Paste a URL to share" },
 ];
 
+// Spread demo messages across the last ~72 minutes so relative times show properly
+const _now = Date.now();
+const _m = (minsAgo) => _now - minsAgo * 60 * 1000;
 const INIT_MESSAGES = [
-  { id:1,  from:"them", text:"good morning 🌸",           time:"9:41 AM", read:true },
-  { id:2,  from:"you",  text:"good morning baby 😍",       time:"9:42 AM", read:true },
-  { id:3,  from:"them", text:"i miss you sm today",        time:"9:43 AM", read:true },
-  { id:4,  from:"you",  text:"i was literally thinking about you when i woke up 🥺", time:"9:43 AM", read:true },
-  { id:5,  from:"them", text:"stop you're making me blush", time:"9:44 AM", read:true },
-  { id:6,  from:"you",  text:"good 💕",                   time:"9:44 AM", read:true },
-  { id:7,  from:"them", text:"what are you doing today?",  time:"9:50 AM", read:true },
-  { id:8,  from:"you",  text:"nothing much honestly. wish i could just stay in bed and talk to you all day", time:"9:51 AM", read:true },
-  { id:9,  from:"them", text:"same 😭 ugh i hate the distance", time:"9:52 AM", read:true },
-  { id:10, from:"them", text:"only 23 more days though 🥰", time:"9:52 AM", read:true },
-  { id:11, from:"you",  text:"counting down every single one 💌", time:"9:53 AM", read:true, pinned:true },
+  { id:1,  from:"them", text:"good morning 🌸",           ts:_m(71), read:true },
+  { id:2,  from:"you",  text:"good morning baby 😍",       ts:_m(70), read:true },
+  { id:3,  from:"them", text:"i miss you sm today",        ts:_m(69), read:true },
+  { id:4,  from:"you",  text:"i was literally thinking about you when i woke up 🥺", ts:_m(68), read:true },
+  { id:5,  from:"them", text:"stop you're making me blush", ts:_m(67), read:true },
+  { id:6,  from:"you",  text:"good 💕",                   ts:_m(66), read:true },
+  { id:7,  from:"them", text:"what are you doing today?",  ts:_m(58), read:true },
+  { id:8,  from:"you",  text:"nothing much honestly. wish i could just stay in bed and talk to you all day", ts:_m(57), read:true },
+  { id:9,  from:"them", text:"same 😭 ugh i hate the distance", ts:_m(3),  read:true },
+  { id:10, from:"them", text:"only 23 more days though 🥰", ts:_m(2),  read:true },
+  { id:11, from:"you",  text:"counting down every single one 💌", ts:_m(0), read:true, pinned:true },
 ];
+
+// ── Relative timestamp helper ─────────────────────────────────────────────────
+function relativeTime(ts) {
+  const secs = Math.floor((Date.now() - ts) / 1000);
+  if (secs < 10)  return "now";
+  if (secs < 30)  return "10s ago";
+  if (secs < 60)  return "30s ago";
+  const mins = Math.floor(secs / 60);
+  if (mins < 60)  return `${mins} min${mins === 1 ? "" : "s"} ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 12)   return `${hrs} hr${hrs === 1 ? "" : "s"} ago`;
+  return new Date(ts).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+}
 
 const PINNED = INIT_MESSAGES.find(m => m.pinned);
 
@@ -70,7 +86,14 @@ function TypingDots() {
 function Bubble({ msg, onReact, onReply, onPin, onDelete, isLastSeen }) {
   const isYou = msg.from === "you";
   const [showMenu, setShowMenu] = useState(false);
-  const timerRef = useRef(null);
+  const [, tick]   = useState(0);
+  const timerRef   = useRef(null);
+
+  // Re-render every 10 s so relative timestamps stay fresh
+  useEffect(() => {
+    const id = setInterval(() => tick(n => n + 1), 10_000);
+    return () => clearInterval(id);
+  }, []);
 
   const REACTIONS = ["❤️","😂","😮","😢","🔥","💕"];
 
@@ -162,7 +185,6 @@ function Bubble({ msg, onReact, onReply, onPin, onDelete, isLastSeen }) {
             outline: msg.pinned ? "1px solid rgba(201,169,110,.35)" : "none",
           }}
         >
-          {msg.pinned && <div style={{ fontSize:9, color:"rgba(201,169,110,.7)", letterSpacing:"1.5px", textTransform:"uppercase", marginBottom:4 }}>📌 pinned</div>}
           {msg.text}
         </div>
 
@@ -171,11 +193,17 @@ function Bubble({ msg, onReact, onReply, onPin, onDelete, isLastSeen }) {
           <div style={{ fontSize:16, marginTop:3, animation:"popIn .18s ease" }}>{msg.reaction}</div>
         )}
 
-        {/* Timestamp row — no ticks; only "Seen" on last read outgoing message */}
-        <div style={{ display:"flex", gap:4, alignItems:"center", marginTop:3 }}>
-          <span style={{ fontSize:10, color:"rgba(255,255,255,.28)" }}>{msg.time}</span>
+        {/* Footer row: [📌 pin icon] [relative time] [· seen] */}
+        <div style={{ display:"flex", gap:5, alignItems:"center", marginTop:3 }}>
+          {msg.pinned && (
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,.75)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="17" x2="12" y2="22"/>
+              <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+            </svg>
+          )}
+          <span style={{ fontSize:10, color:"rgba(255,255,255,.28)" }}>{relativeTime(msg.ts)}</span>
           {isLastSeen && (
-            <span style={{ fontSize:10, color:"rgba(232,116,138,.6)", fontStyle:"italic" }}>Seen</span>
+            <span style={{ fontSize:10, color:"rgba(232,116,138,.55)", fontStyle:"italic" }}>· seen</span>
           )}
         </div>
       </div>
@@ -339,15 +367,22 @@ export default function ChatScreen({ onBack }) {
   const [inputText,    setInputText]    = useState("");
   const [emojiIdx,     setEmojiIdx]     = useState(0);
   const [voiceMode,    setVoiceMode]    = useState("voice");
-  const [showAttach,   setShowAttach]   = useState(false);
-  const [showEmoji,    setShowEmoji]    = useState(false);
-  const [showPinned,   setShowPinned]   = useState(true);
-  const [isTyping,     setIsTyping]     = useState(false);
-  const [holdRec,      setHoldRec]      = useState(false);
-  const [replyTo,      setReplyTo]      = useState(null);
-  const [showSettings, setShowSettings] = useState(false);
-  const bottomRef = useRef(null);
-  const inputRef  = useRef(null);
+  const [showAttach,    setShowAttach]    = useState(false);
+  const [showEmoji,     setShowEmoji]     = useState(false);
+  const [showPinned,    setShowPinned]    = useState(true);
+  const [isTyping,      setIsTyping]      = useState(false);
+  const [holdRec,       setHoldRec]       = useState(false);
+  const [replyTo,       setReplyTo]       = useState(null);
+  const [showSettings,  setShowSettings]  = useState(false);
+  const [showMenu,      setShowMenu]      = useState(false);
+  const [showSearch,    setShowSearch]    = useState(false);
+  const [searchQuery,   setSearchQuery]   = useState("");
+  const [showPinnedPage,setShowPinnedPage]= useState(false);
+  const [pinnedIdx,     setPinnedIdx]     = useState(0);   // which pinned msg shown in banner
+  const scrollRef  = useRef(null);   // message list scroll container
+  const msgRefs    = useRef({});     // id → DOM node for scroll-to
+  const bottomRef  = useRef(null);
+  const inputRef   = useRef(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages, isTyping]);
 
@@ -358,7 +393,7 @@ export default function ChatScreen({ onBack }) {
       setMessages(m => [...m, {
         id: Date.now(), from:"them",
         text: ["🥺💕","i love you sm","aww baby","😭😭😭","stop you're too cute","i can't wait to see you","ugh miss you"][Math.floor(Math.random()*7)],
-        time: new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),
+        ts: Date.now(),
         read:false,
       }]);
     }, 2400);
@@ -368,7 +403,7 @@ export default function ChatScreen({ onBack }) {
     if (!inputText.trim()) return;
     setMessages(m => [...m, {
       id: Date.now(), from:"you", text: inputText.trim(),
-      time: new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),
+      ts: Date.now(),
       read:false, replyTo,
     }]);
     setInputText(""); setReplyTo(null);
@@ -379,8 +414,20 @@ export default function ChatScreen({ onBack }) {
     setMessages(m => m.map(msg => msg.id === id ? { ...msg, reaction: emoji } : msg));
   }
 
+  const PIN_LIMIT = 20;
   function pinMessage(id) {
-    setMessages(m => m.map(msg => msg.id === id ? { ...msg, pinned: !msg.pinned } : msg));
+    setMessages(m => {
+      const target = m.find(msg => msg.id === id);
+      if (!target) return m;
+      // Enforce limit: block pinning when already at 20 pinned messages
+      const pinnedCount = m.filter(msg => msg.pinned).length;
+      if (!target.pinned && pinnedCount >= PIN_LIMIT) return m;
+      const updated = m.map(msg => msg.id === id ? { ...msg, pinned: !msg.pinned } : msg);
+      // If we just unpinned, clamp pinnedIdx to new length
+      const newPinned = updated.filter(msg => msg.pinned);
+      setPinnedIdx(i => Math.min(i, Math.max(0, newPinned.length - 1)));
+      return updated;
+    });
   }
 
   function deleteMessage(id) {
@@ -415,46 +462,242 @@ export default function ChatScreen({ onBack }) {
         display:"flex", alignItems:"center", gap:12,
       }}>
         <div onClick={onBack} style={{
-          width:36, height:36, borderRadius:12,
-          background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.1)",
+          width:36, height:36, flexShrink:0,
           display:"flex", alignItems:"center", justifyContent:"center",
-          cursor:"pointer", fontSize:16, flexShrink:0,
-        }}>←</div>
+          cursor:"pointer",
+        }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </div>
 
         <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center" }}>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <div style={{ width:32, height:32, borderRadius:"50%", background:"linear-gradient(135deg,#7eb8f5,#3a6eb4)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:600, color:"#fff" }}>J</div>
-            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:400, color:"#fff", lineHeight:1 }}>Jordan</div>
+            <div>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:400, color:"#fff", lineHeight:1.1 }}>Jordan</div>
+              {/* Partner status — synced from partner's device in production */}
+              <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:2 }}>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#5ef5a0" strokeWidth="2.5" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="9" strokeWidth="2"/>
+                  <circle cx="12" cy="12" r="3.5" fill="#5ef5a0" stroke="none"/>
+                </svg>
+                <span style={{ fontSize:9, letterSpacing:"1.5px", fontVariant:"small-caps", textTransform:"lowercase", color:"rgba(94,245,160,.75)", fontFamily:"'DM Sans',sans-serif" }}>online</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div onClick={() => setShowSettings(s=>!s)} style={{
-          width:36, height:36, borderRadius:12,
-          background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.1)",
-          display:"flex", alignItems:"center", justifyContent:"center",
-          cursor:"pointer", fontSize:16, flexShrink:0,
-        }}>⚙️</div>
+        {/* Right controls — search + 3-dot menu */}
+        <div style={{ display:"flex", alignItems:"center", gap:2, flexShrink:0, position:"relative" }}>
+          {/* Search */}
+          <div onClick={() => { setShowSearch(s=>!s); setShowMenu(false); }} style={{
+            width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center",
+            cursor:"pointer", color: showSearch ? "#e8748a" : "#fff",
+            transition:"color .15s",
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="16.5" y1="16.5" x2="22" y2="22"/>
+            </svg>
+          </div>
+
+          {/* 3-dot menu button */}
+          <div onClick={() => { setShowMenu(s=>!s); setShowSearch(false); }} style={{
+            width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center",
+            cursor:"pointer", color:"#fff",
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <circle cx="12" cy="5"  r="1.6"/>
+              <circle cx="12" cy="12" r="1.6"/>
+              <circle cx="12" cy="19" r="1.6"/>
+            </svg>
+          </div>
+
+          {/* Dropdown menu */}
+          {showMenu && (
+            <>
+              <div onClick={() => setShowMenu(false)} style={{ position:"fixed", inset:0, zIndex:40 }}/>
+              <div className="pop-in" style={{
+                position:"absolute", top:"calc(100% + 6px)", right:0, zIndex:41,
+                background:"rgba(18,5,26,.97)", border:"1px solid rgba(255,255,255,.1)",
+                borderRadius:16, backdropFilter:"blur(18px)",
+                minWidth:195, overflow:"hidden",
+                boxShadow:"0 8px 32px rgba(0,0,0,.65)",
+              }}>
+                {[
+                  { ico: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>, label:"Pinned Messages", action:() => { setShowPinnedPage(true); setShowMenu(false); } },
+                  { ico: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>, label:"Chat Settings", action:() => { setShowSettings(true); setShowMenu(false); } },
+                ].map(({ ico, label, action }, i, arr) => (
+                  <div key={label} onClick={action} style={{
+                    display:"flex", alignItems:"center", gap:12,
+                    padding:"13px 18px",
+                    borderBottom: i < arr.length-1 ? "1px solid rgba(255,255,255,.06)" : "none",
+                    cursor:"pointer", transition:"background .12s",
+                  }}
+                  onPointerEnter={e => e.currentTarget.style.background="rgba(255,255,255,.05)"}
+                  onPointerLeave={e => e.currentTarget.style.background="transparent"}
+                  >
+                    {ico}
+                    <span style={{ fontSize:13, color:"rgba(255,255,255,.82)", fontFamily:"'DM Sans',sans-serif" }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* ── Pinned message banner ── */}
-      {showPinned && PINNED && (
+      {/* ── Search bar ── */}
+      {showSearch && (
         <div style={{
-          position:"relative", zIndex:9,
-          background:"rgba(232,116,138,.07)", borderBottom:"1px solid rgba(232,116,138,.14)",
-          padding:"8px 16px", display:"flex", alignItems:"center", gap:10,
-          cursor:"pointer", animation:"fadeUp .2s ease",
+          position:"relative", zIndex:8,
+          background:"rgba(9,3,14,.92)", backdropFilter:"blur(20px)",
+          borderBottom:"1px solid rgba(255,255,255,.07)",
+          padding:"8px 14px 10px",
+          animation:"fadeUp .18s ease",
         }}>
-          <div style={{ fontSize:13, color:"rgba(232,116,138,.6)", flexShrink:0 }}>📌</div>
-          <div style={{ flex:1, overflow:"hidden" }}>
-            <div style={{ fontSize:9, letterSpacing:"1.5px", textTransform:"uppercase", color:"rgba(232,116,138,.5)", marginBottom:1 }}>Pinned message</div>
-            <div style={{ fontSize:12, color:"rgba(255,255,255,.65)", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis" }}>{PINNED.text}</div>
+          <div style={{
+            display:"flex", alignItems:"center", gap:8,
+            background:"rgba(255,255,255,.07)", border:"1px solid rgba(255,255,255,.1)",
+            borderRadius:14, padding:"8px 12px",
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" strokeWidth="2.2" strokeLinecap="round">
+              <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+            </svg>
+            <input
+              autoFocus
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="search messages…"
+              style={{
+                flex:1, background:"transparent", border:"none", outline:"none",
+                color:"#fff", caretColor:"#e8748a",
+                fontFamily:"'DM Sans',sans-serif", fontSize:13,
+              }}
+            />
+            {searchQuery && (
+              <div onClick={() => setSearchQuery("")} style={{ color:"rgba(255,255,255,.3)", cursor:"pointer", fontSize:13, lineHeight:1 }}>✕</div>
+            )}
           </div>
-          <div onClick={e => { e.stopPropagation(); setShowPinned(false); }} style={{ color:"rgba(255,255,255,.25)", fontSize:12, padding:"2px 4px" }}>✕</div>
         </div>
       )}
 
+      {/* ── Pinned message banner (swipeable, scroll-to on click) ── */}
+      {showPinned && (() => {
+        const pinnedMsgs = messages.filter(m => m.pinned);
+        if (!pinnedMsgs.length) return null;
+        const current = pinnedMsgs[Math.min(pinnedIdx, pinnedMsgs.length - 1)];
+        const total = pinnedMsgs.length;
+
+        function scrollToMessage(id) {
+          const el = msgRefs.current[id];
+          if (el && scrollRef.current) {
+            el.scrollIntoView({ behavior:"smooth", block:"center" });
+            // Flash highlight
+            el.style.transition = "background .15s";
+            el.style.background = "rgba(232,116,138,.1)";
+            el.style.borderRadius = "14px";
+            setTimeout(() => { el.style.background = ""; el.style.borderRadius = ""; }, 900);
+          }
+        }
+
+        // Swipe handlers
+        const swipeRef = { startX: 0, dragging: false };
+        function onBannerPtrDown(e) { swipeRef.startX = e.clientX; swipeRef.dragging = false; }
+        function onBannerPtrMove(e) {
+          if (Math.abs(e.clientX - swipeRef.startX) > 8) swipeRef.dragging = true;
+        }
+        function onBannerPtrUp(e) {
+          if (!swipeRef.dragging || total < 2) return;
+          const dx = e.clientX - swipeRef.startX;
+          if (dx < -30) setPinnedIdx(i => (i + 1) % total);       // swipe left → next
+          else if (dx > 30) setPinnedIdx(i => (i - 1 + total) % total); // swipe right → prev
+        }
+
+        return (
+          <div
+            onPointerDown={onBannerPtrDown}
+            onPointerMove={onBannerPtrMove}
+            onPointerUp={onBannerPtrUp}
+            style={{
+              position:"relative", zIndex:9,
+              background:"rgba(232,116,138,.06)", borderBottom:"1px solid rgba(232,116,138,.13)",
+              padding:"7px 10px 7px 14px", display:"flex", alignItems:"center", gap:8,
+              animation:"fadeUp .2s ease", touchAction:"pan-y", userSelect:"none",
+            }}>
+            {/* Pin icon */}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}>
+              <line x1="12" y1="17" x2="12" y2="22"/>
+              <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+            </svg>
+
+            {/* Text — click to scroll to the message */}
+            <div
+              onClick={() => scrollToMessage(current.id)}
+              style={{ flex:1, overflow:"hidden", cursor:"pointer", minWidth:0 }}
+            >
+              <div style={{ fontSize:9, letterSpacing:"1.8px", textTransform:"uppercase", color:"rgba(232,116,138,.5)", marginBottom:2, fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:6 }}>
+                <span>PINNED MESSAGE</span>
+                {total >= PIN_LIMIT && <span style={{ color:"rgba(255,180,100,.6)" }}>· LIMIT REACHED</span>}
+              </div>
+              <div style={{ fontSize:12, color:"rgba(255,255,255,.7)", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis", fontFamily:"'DM Sans',sans-serif" }}>
+                {current.text}
+              </div>
+              {/* Progress dots — only when multiple */}
+              {total > 1 && (
+                <div style={{ display:"flex", gap:3, marginTop:4 }}>
+                  {pinnedMsgs.map((_, di) => (
+                    <div key={di} style={{
+                      width: di === Math.min(pinnedIdx, total-1) ? 12 : 4,
+                      height:4, borderRadius:2,
+                      background: di === Math.min(pinnedIdx, total-1)
+                        ? "rgba(232,116,138,.8)"
+                        : "rgba(255,255,255,.18)",
+                      transition:"width .2s, background .2s",
+                    }}/>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Chevron nav — only when multiple pinned */}
+            {total > 1 && (
+              <div style={{ display:"flex", gap:1, flexShrink:0 }}>
+                <div
+                  onClick={() => setPinnedIdx(i => (i - 1 + total) % total)}
+                  style={{ width:26, height:26, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:"rgba(255,255,255,.4)", transition:"color .15s" }}
+                  onPointerEnter={e => e.currentTarget.style.color="#fff"}
+                  onPointerLeave={e => e.currentTarget.style.color="rgba(255,255,255,.4)"}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </div>
+                <div
+                  onClick={() => setPinnedIdx(i => (i + 1) % total)}
+                  style={{ width:26, height:26, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:"rgba(255,255,255,.4)", transition:"color .15s" }}
+                  onPointerEnter={e => e.currentTarget.style.color="#fff"}
+                  onPointerLeave={e => e.currentTarget.style.color="rgba(255,255,255,.4)"}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 6 15 12 9 18"/></svg>
+                </div>
+              </div>
+            )}
+
+            {/* Dismiss */}
+            <div
+              onClick={() => setShowPinned(false)}
+              style={{ width:24, height:24, borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:"rgba(255,255,255,.22)", flexShrink:0, transition:"color .15s" }}
+              onPointerEnter={e => e.currentTarget.style.color="rgba(255,255,255,.55)"}
+              onPointerLeave={e => e.currentTarget.style.color="rgba(255,255,255,.22)"}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ── Message list ── */}
-      <div className="msg-scroll" style={{ flex:1, overflowY:"auto", padding:"16px 14px 8px", display:"flex", flexDirection:"column", gap:10, position:"relative" }}>
+      <div ref={scrollRef} className="msg-scroll" style={{ flex:1, overflowY:"auto", padding:"16px 14px 8px", display:"flex", flexDirection:"column", gap:10, position:"relative" }}>
         <div style={{ display:"flex", alignItems:"center", gap:10, margin:"4px 0 8px" }}>
           <div style={{ flex:1, height:1, background:"rgba(255,255,255,.07)" }}/>
           <div style={{ fontSize:10, color:"rgba(255,255,255,.25)", letterSpacing:"1px" }}>Today</div>
@@ -462,7 +705,7 @@ export default function ChatScreen({ onBack }) {
         </div>
 
         {messages.map((msg, i) => (
-          <div key={msg.id}>
+          <div key={msg.id} ref={el => { if (el) msgRefs.current[msg.id] = el; }}>
             {i > 0 && messages[i-1].from !== msg.from && <div style={{ height:4 }}/>}
             <Bubble
               msg={msg}
@@ -521,91 +764,223 @@ export default function ChatScreen({ onBack }) {
         />
       )}
 
-      {/* ── Input bar ── */}
+      {/* ── Input bar — single unified pill field ── */}
       <div style={{
         position:"relative", zIndex:10,
         background:"rgba(9,3,14,.95)", backdropFilter:"blur(24px)",
         borderTop:"1px solid rgba(255,255,255,.07)",
-        padding:"10px 12px 28px",
-        display:"flex", alignItems:"flex-end", gap:8,
+        padding:"10px 14px 28px",
       }}>
-        <div onClick={() => { setShowAttach(true); setShowEmoji(false); }} style={{
-          width:40, height:40, borderRadius:13, flexShrink:0,
-          background:"rgba(255,255,255,.07)", border:"1px solid rgba(255,255,255,.1)",
-          display:"flex", alignItems:"center", justifyContent:"center",
-          cursor:"pointer", fontSize:20, color:"rgba(255,255,255,.6)",
-          transition:"background .15s",
-        }}>＋</div>
+        {/* Outer pill — this IS the field */}
+        <div style={{
+          display:"flex", alignItems:"center", gap:0,
+          background:"rgba(255,255,255,.07)",
+          border:"1px solid rgba(255,255,255,.1)",
+          borderRadius:20,
+          padding:"6px 6px 6px 4px",
+          transition:"border-color .2s",
+          minHeight:46,
+        }}
+          onFocusCapture={e => e.currentTarget.style.borderColor="rgba(232,116,138,.38)"}
+          onBlurCapture={e => e.currentTarget.style.borderColor="rgba(255,255,255,.1)"}
+        >
+          {/* ＋ Attach */}
+          <div
+            onClick={() => { setShowAttach(true); setShowEmoji(false); }}
+            style={{
+              width:34, height:34, borderRadius:12, flexShrink:0,
+              display:"flex", alignItems:"center", justifyContent:"center",
+              cursor:"pointer", color:"rgba(255,255,255,.4)",
+              transition:"color .15s",
+            }}
+          >
+            {/* Plus outline */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <circle cx="12" cy="12" r="9"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          </div>
 
-        <div style={{ flex:1, position:"relative" }}>
+          {/* Textarea — grows to fill */}
           <textarea
             ref={inputRef}
             value={inputText}
-            onChange={e => { setInputText(e.target.value); e.target.style.height="auto"; e.target.style.height=Math.min(e.target.scrollHeight,120)+"px"; }}
+            onChange={e => {
+              setInputText(e.target.value);
+              e.target.style.height = "auto";
+              e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+            }}
             onKeyDown={e => { if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendMessage(); } }}
             placeholder="say something sweet…"
             rows={1}
             style={{
-              width:"100%", background:"rgba(255,255,255,.07)",
-              border:"1px solid rgba(255,255,255,.1)", borderRadius:16,
-              padding:"10px 44px 10px 14px", color:"#fff",
-              fontFamily:"'DM Sans',sans-serif", fontSize:14, lineHeight:1.45,
-              outline:"none", resize:"none", overflowY:"hidden",
-              transition:"border-color .2s",
+              flex:1,
+              background:"transparent", border:"none", outline:"none",
+              color:"#fff", caretColor:"#e8748a",
+              fontFamily:"'DM Sans',sans-serif", fontSize:14, lineHeight:1.5,
+              resize:"none", overflowY:"hidden",
+              padding:"7px 4px",
+              alignSelf:"center",
             }}
-            onFocus={e => { e.target.style.borderColor="rgba(232,116,138,.4)"; setShowEmoji(false); }}
-            onBlur={e => { e.target.style.borderColor="rgba(255,255,255,.1)"; }}
+            onFocus={() => setShowEmoji(false)}
           />
-          <div onClick={() => { cycleEmoji(); setShowEmoji(v => !v); }} style={{
-            position:"absolute", right:10, top:"50%", transform:"translateY(-50%)",
-            fontSize:20, cursor:"pointer", lineHeight:1,
-            transition:"transform .2s cubic-bezier(.34,1.56,.64,1)",
-          }}>
-            {EMOJI_CYCLE[emojiIdx]}
-          </div>
-        </div>
 
-        {hasText ? (
-          <div style={{
-            width:40, height:40, borderRadius:13, flexShrink:0,
-            background:"linear-gradient(135deg,#e8748a,#c45578)",
-            boxShadow:"0 4px 18px rgba(232,116,138,.4)",
-            display:"flex", alignItems:"center", justifyContent:"center",
-            cursor:"pointer", fontSize:17, color:"#fff",
-            transition:"transform .12s", animation:"popIn .18s ease",
-          }}
-          onPointerDown={e => e.currentTarget.style.transform="scale(.9)"}
-          onPointerUp={e => { e.currentTarget.style.transform=""; sendMessage(); }}
-          >➤</div>
-        ) : (
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
-            <div onClick={() => setVoiceMode(m => m==="voice"?"video":"voice")} style={{
-              fontSize:9, color:"rgba(255,255,255,.3)", cursor:"pointer", letterSpacing:".5px",
-              fontFamily:"'DM Sans',sans-serif",
-            }}>
-              {voiceMode==="voice"?"MIC":"CAM"}
+          {/* Emoji face toggle */}
+          <div
+            onClick={() => { cycleEmoji(); setShowEmoji(v => !v); }}
+            style={{
+              width:34, height:34, flexShrink:0,
+              display:"flex", alignItems:"center", justifyContent:"center",
+              cursor:"pointer", color:"rgba(255,255,255,.4)",
+              transition:"color .15s, transform .2s cubic-bezier(.34,1.56,.64,1)",
+            }}
+          >
+            {/* Smiley face outline */}
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M8.5 14.5s1 2 3.5 2 3.5-2 3.5-2"/>
+              <circle cx="9" cy="10" r=".8" fill="currentColor" stroke="none"/>
+              <circle cx="15" cy="10" r=".8" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+
+          {/* Send button or Mic/Camera toggle */}
+          {hasText ? (
+            <div
+              style={{
+                width:34, height:34, borderRadius:12, flexShrink:0,
+                background:"linear-gradient(135deg,#e8748a,#c45578)",
+                boxShadow:"0 3px 14px rgba(232,116,138,.45)",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                cursor:"pointer", color:"#fff",
+                transition:"transform .12s", animation:"popIn .18s ease",
+              }}
+              onPointerDown={e => e.currentTarget.style.transform="scale(.88)"}
+              onPointerUp={e => { e.currentTarget.style.transform=""; sendMessage(); }}
+            >
+              {/* Arrow send */}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" stroke="none"/>
+              </svg>
             </div>
+          ) : (
             <div
               onPointerDown={() => setHoldRec(true)}
               onPointerUp={() => setHoldRec(false)}
               onPointerLeave={() => setHoldRec(false)}
+              onClick={() => setVoiceMode(m => m==="voice"?"video":"voice")}
               style={{
-                width:40, height:40, borderRadius:13, flexShrink:0,
-                background: holdRec ? "rgba(232,116,138,.3)" : "rgba(255,255,255,.07)",
-                border:`1px solid ${holdRec ? "rgba(232,116,138,.5)" : "rgba(255,255,255,.1)"}`,
+                width:34, height:34, borderRadius:12, flexShrink:0,
+                background: holdRec ? "rgba(232,116,138,.22)" : "transparent",
                 display:"flex", alignItems:"center", justifyContent:"center",
-                cursor:"pointer", fontSize:18, touchAction:"none",
-                transition:"background .12s, border-color .12s",
+                cursor:"pointer", touchAction:"none",
+                color: holdRec ? "#e8748a" : "rgba(255,255,255,.4)",
+                transition:"background .12s, color .12s",
               }}
             >
-              {voiceMode==="voice" ? "🎙️" : "📹"}
+              {voiceMode === "voice" ? (
+                /* Microphone outline */
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                  <rect x="9" y="2" width="6" height="11" rx="3"/>
+                  <path d="M5 10a7 7 0 0 0 14 0"/>
+                  <line x1="12" y1="19" x2="12" y2="22"/>
+                  <line x1="9" y1="22" x2="15" y2="22"/>
+                </svg>
+              ) : (
+                /* Video camera outline */
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="23 7 16 12 23 17 23 7"/>
+                  <rect x="1" y="5" width="15" height="14" rx="2"/>
+                </svg>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {showAttach   && <AttachSheet onClose={() => setShowAttach(false)} />}
       {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} />}
+
+      {/* ── Pinned Messages full overlay ── */}
+      {showPinnedPage && (
+        <div style={{ position:"absolute", inset:0, zIndex:60, display:"flex", flexDirection:"column", background:"#0d0511", animation:"fadeUp .22s ease" }}>
+          {/* Header */}
+          <div style={{
+            background:"rgba(9,3,14,.95)", backdropFilter:"blur(24px)",
+            borderBottom:"1px solid rgba(255,255,255,.07)",
+            padding:"14px 16px 12px",
+            display:"flex", alignItems:"center", gap:12,
+          }}>
+            <div onClick={() => setShowPinnedPage(false)} style={{ width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:"#fff" }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </div>
+            <div style={{ flex:1, fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:300, color:"#fff" }}>
+              Pinned <em style={{ fontStyle:"italic", color:"#f5a8b8" }}>Messages</em>
+            </div>
+            <div style={{ fontSize:11, letterSpacing:"1.5px", color:"rgba(255,255,255,.28)", fontVariant:"small-caps" }}>
+              {messages.filter(m=>m.pinned).length} pinned
+            </div>
+          </div>
+
+          {/* List */}
+          <div style={{ flex:1, overflowY:"auto", padding:"16px 14px" }}>
+            {messages.filter(m=>m.pinned).length === 0 ? (
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"60%", gap:12, opacity:.5 }}>
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="17" x2="12" y2="22"/>
+                  <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+                </svg>
+                <span style={{ fontSize:13, color:"rgba(255,255,255,.35)", fontFamily:"'DM Sans',sans-serif" }}>No pinned messages yet</span>
+              </div>
+            ) : (
+              messages.filter(m=>m.pinned).map((msg, i) => {
+                const isYou = msg.from === "you";
+                return (
+                  <div key={msg.id} style={{
+                    display:"flex", gap:10, padding:"12px 14px",
+                    background:"rgba(255,255,255,.03)", border:"1px solid rgba(201,169,110,.14)",
+                    borderRadius:16, marginBottom:10,
+                    animation:"msgIn .22s ease",
+                  }}>
+                    {/* Avatar */}
+                    <div style={{
+                      width:34, height:34, borderRadius:"50%", flexShrink:0,
+                      background: isYou ? "linear-gradient(135deg,#e8748a,#9b3a6e)" : "linear-gradient(135deg,#7eb8f5,#3a6eb4)",
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      fontSize:13, fontWeight:600, color:"#fff",
+                    }}>{isYou ? "A" : "J"}</div>
+
+                    {/* Content */}
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
+                        <span style={{ fontSize:12, fontWeight:500, color: isYou ? "#f5a8b8" : "#7eb8f5" }}>{isYou ? "You" : "Jordan"}</span>
+                        <span style={{ fontSize:10, color:"rgba(255,255,255,.28)" }}>{relativeTime(msg.ts)}</span>
+                      </div>
+                      <div style={{ fontSize:13, color:"rgba(255,255,255,.82)", lineHeight:1.55, wordBreak:"break-word", fontFamily:"'DM Sans',sans-serif" }}>{msg.text}</div>
+                    </div>
+
+                    {/* Unpin */}
+                    <div
+                      onClick={() => pinMessage(msg.id)}
+                      style={{ flexShrink:0, width:28, height:28, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", background:"rgba(201,169,110,.1)", border:"1px solid rgba(201,169,110,.2)", transition:"background .15s" }}
+                      title="Unpin"
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="17" x2="12" y2="22"/>
+                        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+                      </svg>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -266,7 +266,21 @@ export default function HomeScreen({ onDrawer }) {
           </div>
           <div className="hdr-avatars">
             <div className="hdr-av hdr-av-you">A</div>
-            <div className="hdr-av hdr-av-them">J</div>
+            <div className="hdr-av hdr-av-them" style={{ position:"relative" }}>
+              J
+              {/* Partner status dot — 💚 online (synced from partner's device in production) */}
+              <div style={{
+                position:"absolute", bottom:-1, right:-1,
+                width:14, height:14, borderRadius:"50%",
+                background:"#0d0511", border:"1.5px solid #0d0511",
+                display:"flex", alignItems:"center", justifyContent:"center",
+              }}>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#5ef5a0" strokeWidth="2.5" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="9" strokeWidth="2"/>
+                  <circle cx="12" cy="12" r="3.5" fill="#5ef5a0" stroke="none"/>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
 

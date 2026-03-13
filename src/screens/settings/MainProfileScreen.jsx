@@ -208,13 +208,56 @@ function Toggle({ on, toggle }) {
   );
 }
 
+// ── Status config ─────────────────────────────────────────────────────────────
+// Icons are SVG outlines that mirror the shape of 💚 💛 💔 💤
+
+// Reusable dot sizes for pill vs sheet vs avatar
+function StatusIcon({ statusKey, size = 13 }) {
+  if (statusKey === "online") return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#5ef5a0" strokeWidth="2.2" strokeLinecap="round">
+      <circle cx="12" cy="12" r="9"/>
+      <circle cx="12" cy="12" r="3.5" fill="#5ef5a0" stroke="none"/>
+    </svg>
+  );
+  if (statusKey === "away") return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#f5c842" strokeWidth="2.2" strokeLinecap="round">
+      <circle cx="12" cy="12" r="9"/>
+      <circle cx="12" cy="12" r="3.5" fill="#f5c842" stroke="none"/>
+    </svg>
+  );
+  if (statusKey === "offline") return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="rgba(255,100,100,.55)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21l-1.45-1.32C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08A6.002 6.002 0 0 1 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.18L12 21z"/>
+      <line x1="7" y1="7" x2="17" y2="17" stroke="rgba(255,100,100,.7)"/>
+    </svg>
+  );
+  // sleeping — 💤 zzz
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#8fa8f5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="6" y1="6"  x2="12" y2="6"/><line x1="12" y1="6"  x2="6"  y2="12"/><line x1="6"  y1="12" x2="12" y2="12"/>
+      <line x1="14" y1="12" x2="19" y2="12"/><line x1="19" y1="12" x2="14" y2="18"/><line x1="14" y1="18" x2="19" y2="18"/>
+    </svg>
+  );
+}
+
+const STATUSES = [
+  { key:"online",   label:"Online",   color:"#5ef5a0" },
+  { key:"away",     label:"Away",     color:"#f5c842" },
+  { key:"offline",  label:"Offline",  color:"rgba(255,100,100,.7)" },
+  { key:"sleeping", label:"Sleeping", color:"#8fa8f5" },
+];
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 export default function MainProfileScreen({ navigate }) {
   const duration = useDuration();
-  const [notifs,       setNotifs]       = useState(true);
-  const [pinGate,      setPinGate]      = useState(false);   // Danger Zone gate
-  const [booIdGate,    setBooIdGate]    = useState(false);   // Boo ID reveal gate
-  const [booIdVisible, setBooIdVisible] = useState(false);   // true after PIN confirmed
+  const [notifs,        setNotifs]        = useState(true);
+  const [pinGate,       setPinGate]       = useState(false);
+  const [booIdGate,     setBooIdGate]     = useState(false);
+  const [booIdVisible,  setBooIdVisible]  = useState(false);
+  const [status,        setStatus]        = useState("online");
+  const [statusPicker,  setStatusPicker]  = useState(false);
+
+  const currentStatus = STATUSES.find(s => s.key === status);
 
   return (
     <>
@@ -265,16 +308,28 @@ export default function MainProfileScreen({ navigate }) {
                 display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,
               }}>📷</div>
             </div>
-            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:24,fontWeight:300,color:"#fff",marginBottom:4}}>
+            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:24,fontWeight:300,color:"#fff",marginBottom:6}}>
               Alex
             </div>
-            <div style={{
-              fontFamily:"'Cormorant Garamond',serif",
-              fontSize:14,letterSpacing:4,fontWeight:300,marginBottom:0,
-              background:"linear-gradient(135deg,rgba(255,255,255,.5),#f5a8b8)",
-              WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
-            }}>
-              A3K9P2X8Q
+            {/* Status pill — tap to change */}
+            <div
+              onClick={() => setStatusPicker(true)}
+              style={{
+                display:"inline-flex", alignItems:"center", gap:6,
+                background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.1)",
+                borderRadius:20, padding:"5px 14px", cursor:"pointer",
+                transition:"border-color .18s",
+              }}
+            >
+              <StatusIcon statusKey={status} size={12}/>
+              <span style={{
+                fontSize:11, letterSpacing:"1.5px", fontVariant:"small-caps",
+                textTransform:"lowercase",
+                color: STATUSES.find(s=>s.key===status).color,
+                fontFamily:"'DM Sans',sans-serif", fontWeight:500,
+              }}>
+                {currentStatus.label}
+              </span>
             </div>
           </div>
 
@@ -297,10 +352,15 @@ export default function MainProfileScreen({ navigate }) {
               ))}
             </div>
             <div style={{flex:1}}>
-              <div style={{fontSize:14,fontWeight:500,color:"#fff",marginBottom:3}}>
+              <div style={{fontSize:14,fontWeight:500,color:"#fff",marginBottom:4}}>
                 <em style={{fontStyle:"italic",color:"#f5a8b8"}}>{duration}</em>{" "}together
               </div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,.35)"}}>Paired with Jordan · since Jul 7, 2025</div>
+              {/* Partner status — hardcoded online; real value synced from partner's device */}
+              <div style={{display:"flex",alignItems:"center",gap:5}}>
+                <StatusIcon statusKey="online" size={10}/>
+                <span style={{fontSize:10,letterSpacing:"1.5px",fontVariant:"small-caps",color:"#5ef5a0",fontFamily:"'DM Sans',sans-serif"}}>online</span>
+                <span style={{fontSize:10,color:"rgba(255,255,255,.2)",marginLeft:2}}>· Jordan</span>
+              </div>
             </div>
             <div style={{width:28,height:28,borderRadius:9,background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,color:"rgba(255,255,255,.3)"}}>›</div>
           </div>
@@ -319,8 +379,8 @@ export default function MainProfileScreen({ navigate }) {
             ))}
           </Card>
 
-          {/* ── Boo ID ── */}
-          <SectionLabel text="Boo ID"/>
+          {/* ── Couple ID ── */}
+          <SectionLabel text="Couple ID"/>
           {/* Note: outer div has no overflow:hidden so blur() isn't clipped */}
           <div style={{
             margin:"0 16px 16px",
@@ -342,12 +402,12 @@ export default function MainProfileScreen({ navigate }) {
                 width:32, height:32, borderRadius:10, flexShrink:0,
                 background:"rgba(255,255,255,.06)",
                 display:"flex", alignItems:"center", justifyContent:"center", fontSize:15,
-              }}>🆔</div>
+              }}>🔐</div>
 
               {/* Label + value */}
               <div style={{ flex:1, minWidth:0 }}>
                 <div style={{ fontSize:10, marginBottom:4, letterSpacing:1, textTransform:"uppercase", color:"rgba(255,255,255,.3)" }}>
-                  Permanent · Cannot be changed
+                  Shared Key · Used for encryption
                 </div>
                 <div style={{
                   fontFamily:"'Cormorant Garamond',serif",
@@ -358,7 +418,7 @@ export default function MainProfileScreen({ navigate }) {
                   userSelect: booIdVisible ? "text" : "none",
                   lineHeight:1,
                 }}>
-                  A3K9BX
+                  X7R2MN4KQ
                 </div>
               </div>
 
@@ -418,14 +478,79 @@ export default function MainProfileScreen({ navigate }) {
         />
       )}
 
-      {/* Boo ID reveal PIN gate */}
+      {/* Couple ID reveal PIN gate */}
       {booIdGate && (
         <PinGate
-          title={<>Reveal your <em style={{fontStyle:"italic",color:"#f5a8b8"}}>Boo ID</em></>}
-          subtitle="Enter your PIN to reveal your 6-character Boo ID"
+          title={<>Reveal your <em style={{fontStyle:"italic",color:"#f5a8b8"}}>Couple ID</em></>}
+          subtitle="Enter your PIN to reveal the shared encryption key"
           onSuccess={()=>{ setBooIdGate(false); setBooIdVisible(true); }}
           onClose={()=>setBooIdGate(false)}
         />
+      )}
+
+      {/* Status picker bottom sheet */}
+      {statusPicker && (
+        <div style={{
+          position:"fixed", inset:0, zIndex:100,
+          background:"rgba(0,0,0,.65)", backdropFilter:"blur(8px)",
+          display:"flex", alignItems:"flex-end",
+        }} onClick={() => setStatusPicker(false)}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width:"100%",
+              background:"linear-gradient(180deg,#1e0830,#0d0511)",
+              borderRadius:"28px 28px 0 0",
+              borderTop:"1px solid rgba(255,255,255,.1)",
+              padding:"20px 20px 48px",
+              animation:"slideUp .28s cubic-bezier(.4,0,.2,1)",
+            }}
+          >
+            {/* Pill handle */}
+            <div onClick={() => setStatusPicker(false)} style={{ display:"flex", justifyContent:"center", marginBottom:18, cursor:"pointer" }}>
+              <div style={{ width:36, height:4, borderRadius:2, background:"rgba(255,255,255,.18)" }}/>
+            </div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:300, color:"#fff", marginBottom:18 }}>
+              Set your <em style={{ fontStyle:"italic", color:"#f5a8b8" }}>status</em>
+            </div>
+            {STATUSES.map(s => (
+              <div
+                key={s.key}
+                onClick={() => { setStatus(s.key); setStatusPicker(false); }}
+                style={{
+                  display:"flex", alignItems:"center", gap:14,
+                  padding:"13px 16px", borderRadius:14, marginBottom:6,
+                  background: status === s.key ? "rgba(255,255,255,.07)" : "transparent",
+                  border: `1px solid ${status === s.key ? "rgba(255,255,255,.1)" : "transparent"}`,
+                  cursor:"pointer", transition:"background .15s",
+                }}
+              >
+                <div style={{
+                  width:36, height:36, borderRadius:11,
+                  background:"rgba(255,255,255,.05)", border:"1px solid rgba(255,255,255,.08)",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                }}>
+                  <StatusIcon statusKey={s.key} size={20}/>
+                </div>
+                <span style={{
+                  fontSize:13, fontFamily:"'DM Sans',sans-serif",
+                  color: status === s.key ? "#fff" : "rgba(255,255,255,.55)",
+                  letterSpacing:"1.5px", fontVariant:"small-caps", textTransform:"lowercase",
+                  fontWeight: status === s.key ? 500 : 400,
+                }}>
+                  {s.label}
+                </span>
+                {status === s.key && (
+                  <div style={{ marginLeft:"auto" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e8748a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );
